@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <unistd.h>
+
 double randGen(){
 	srand(time(NULL));
 	double tempsTour[4], s;
