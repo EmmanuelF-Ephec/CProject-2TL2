@@ -2,13 +2,19 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-int timer() {
-    srand(time(NULL));
-    int time1 = rand() % 15 + 35;
-    //printf("temps : %d \n", time1); 
-    return time1;
+double randGen(){
+	srand(time(NULL));
+	double tempsTour[4], s;
+	int i, n = 3;
+	for ( i = 0; i < n; i++ ){
+		s = (( rand() % 1600 ) / 100 ) + 35;
+		tempsTour[i] = s;
+		tempsTour[3] += s;
+		printf("S%d : %.2f secondes\n", (i+1), tempsTour[i]);
+	}
+	printf("Temps du tour : %.2f secondes\n", tempsTour[3]);
+	return 0;
 }
-
 int main (int argc, char *argv[]) {
 
     int pid_fils;
