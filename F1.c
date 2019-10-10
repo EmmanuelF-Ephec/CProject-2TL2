@@ -2,6 +2,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include "randGen.c"
+#include "randGenBeta.c"
+#include "comparTemps.c"
 
 struct voiture {
     int num;
@@ -21,9 +23,7 @@ int main (int argc, char *argv[]) {
     
         pid_fils = fork();
         if (pid_fils == 0) {
-            printf("La voiture avec le numéro %d a fait la section 1 avec le temps %d \n");
-            //printf("Le fils avec pid %d et num %d et pere a pid %d\n",getpid(),num, getppid()); 
-
+            printf("La voiture avec le numéro %d a fait la section 1 avec le temps %d \n"); 
             exit(0);
         }
         else
@@ -32,6 +32,7 @@ int main (int argc, char *argv[]) {
         }
         
     }
+
     randGen();
 
     return 0;
