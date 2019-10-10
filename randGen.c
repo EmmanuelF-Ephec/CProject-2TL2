@@ -1,8 +1,8 @@
 #include <stdio.h>
-double randGen( double tempsTour[] ){
+double randGen( double tempsTour[4] ){
 	double s;
-	int i, n = 3;
-	for ( i = 0; i < n; i++ ){
+	int i;
+	for ( i = 0; i < 3; i++ ){
 		s = rand() % 1600;
 		s = ( s / 100 ) + 35;
 		tempsTour[i] = s;
