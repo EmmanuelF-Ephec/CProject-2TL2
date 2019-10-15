@@ -1,5 +1,5 @@
 #include <stdio.h>
-double randGen( double tempsTour[4] ){
+double randGen( double tempsTour[] ){
 	double s;
 	int i;
 	for ( i = 0; i < 3; i++ ){

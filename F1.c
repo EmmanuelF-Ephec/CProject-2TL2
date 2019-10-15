@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "randGen.c"
 #include "comparTemps.c"
+#include "fork.c"
 
 struct Voiture {
     int num;
@@ -12,28 +13,14 @@ struct Voiture {
 
 int main (int argc, char *argv[]) {
     srand(time(NULL));
-    int pid_fils;
     double tempsTour[4];
     int voitures[20] = { 7, 99, 5, 16, 8, 20, 4, 55, 10, 26, 44, 77, 11, 18, 23, 33, 3, 27, 63, 88};
 
-    int pere = getpid();
-    printf("pere %d\n" , pere);
-    for (int i = 0; i < 4; i++)
-    {
-    
-        pid_fils = fork();
-        if (pid_fils == 0) {
-            
-            exit(0);
-        }
-        else
-        {
-            printf("je suis le pere\n");
-        }
-        
-    }
+
+
     int i, j;
     int length = sizeof(voitures) / sizeof(voitures[0]);
+    forkVoitures(voitures);
     for ( j = 0; j < length; j++){
     randGen(tempsTour);
     printf( "Voiture %d\n", voitures[j]);
