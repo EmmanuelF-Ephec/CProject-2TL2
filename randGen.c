@@ -1,4 +1,4 @@
-#include <stdio.h>
+
 double randGen( double tempsTour[] ){
 	double s;
 	int i;
