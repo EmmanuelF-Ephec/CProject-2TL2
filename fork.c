@@ -1,5 +1,4 @@
-#include <sys/types.h>
-#include <unistd.h>
+
 
 void forkVoitures(int tab[20]) {
     int pid_fils;
@@ -18,5 +17,4 @@ void forkVoitures(int tab[20]) {
         }
         
     }
-    return 0;
 }
