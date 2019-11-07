@@ -1,4 +1,4 @@
-#define SHM_SIZE 1024
+//#define SHM_SIZE 20
 
 int shmid;
 struct Voiture *getVoitures;
@@ -8,7 +8,7 @@ double temps;
 
 
 int memPart () {
-    if ((shmid = shmget(77, SHM_SIZE , 0777 | IPC_CREAT )) == -1) {
+    if ((shmid = shmget(77, 20*sizeof(getVoitures) , IPC_CREAT | 0666 )) == -1) {
         printf("Erreur : shmget\n");
         return -1;
     };

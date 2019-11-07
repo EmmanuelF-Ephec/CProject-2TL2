@@ -18,7 +18,7 @@ int main (int argc, char *argv[]) {
     int i, j;
     int length = sizeof(voitures) / sizeof(voitures[0]);
 
-    for ( j = 0; j < length; j++){
+  /*  for ( j = 0; j < length; j++){
         tempsTour[3] = 0;
         randGen(tempsTour);
         printf( "Voiture %d\n", voitures[j]);
@@ -27,6 +27,6 @@ int main (int argc, char *argv[]) {
         }
         printf( "Temps du tour : %.2f secondes\n", tempsTour[3] );
         }
-
+*/
     return 0;
 }
