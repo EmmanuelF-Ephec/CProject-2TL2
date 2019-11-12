@@ -5,5 +5,5 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 //#include "memPart2.c"
-#include "fork.c"
 #include "randGen.c"
+#include "fork.c"
