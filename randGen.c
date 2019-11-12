@@ -10,6 +10,7 @@ double randGen(int j, int shm){
         printf("Erreur : shmat\n");
     }
 	getVoitures[j].temps[3] = 0;
+	srand(time(NULL)*getVoitures[j].id);
 
 	for (i = 0; i < 3; i++ ){
 		s = rand() % 1600;
