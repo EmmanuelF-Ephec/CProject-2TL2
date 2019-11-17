@@ -16,9 +16,9 @@ double randGen(int j, int shm){
 		s = rand() % 1600;
 		s = ( s / 100 ) + 35;
 		getVoitures[j].temps[i] = s;
-        printf( "S%d : %.2f secondes\n", (i+1), getVoitures[j].temps[i] );
+        //printf( "S%d : %.2f secondes\n", (i+1), getVoitures[j].temps[i] );
 		getVoitures[j].temps[3] += s;
 	}
-	printf( "Temps du tour : %.2f secondes\n", getVoitures[j].temps[3] );
+	//printf( "Temps du tour : %.2f secondes\n", getVoitures[j].temps[3] );
 	return 0;
 }
