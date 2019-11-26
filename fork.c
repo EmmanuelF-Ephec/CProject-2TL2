@@ -20,7 +20,7 @@ void forkVoitures(int tab[20], int shm) {
 
         if (pid_fils == 0) {
             getVoitures[i].id = tab[i];
-            randGen(i, shmid);
+            tour(3, i, shmid);
             exit(0);
         }
         else {
