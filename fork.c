@@ -18,6 +18,7 @@ void forkVoitures(int tab[20], int shm, size_t nombreVoiture) {
 
         if (pid_fils == 0) {
             getVoitures[i].id = tab[i];
+            getVoitures[j].temps[3] = 0;
             tour(3, shmid,i);
             exit(0);
         }
@@ -31,4 +32,5 @@ void forkVoitures(int tab[20], int shm, size_t nombreVoiture) {
 	        printf( "Temps du tour : %.2f secondes\n", getVoitures[i].temps[3] );
         }
     }
+    
 }
