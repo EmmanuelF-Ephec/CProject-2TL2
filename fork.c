@@ -1,14 +1,12 @@
-void forkVoitures(int tab[20], int shm) {
+void forkVoitures(int tab[20], int shm, size_t nombreVoiture) {
     int pid_fils;
     int pere = getpid();
 
     int shmid = shm;
 
     int i, j;
-    //int lengthTab = sizeof(tab) / sizeof(tab[0]);
 
-    for (i = 0; i < 20;i++) {
-        sleep(1);
+    for (i = 0; i < nombreVoiture;i++) {
         if ((pid_fils = fork()) == -1) {
             printf("Erreur : fork");
         };
@@ -20,11 +18,12 @@ void forkVoitures(int tab[20], int shm) {
 
         if (pid_fils == 0) {
             getVoitures[i].id = tab[i];
-            tour(3, i, shmid);
+            tour(3, shmid,i);
             exit(0);
         }
         else {
-            struct Voiture classement[20];
+            sleep(1);
+            struct Voiture classement[nombreVoiture];
             memcpy(classement, getVoitures, sizeof(classement));
             for (j = 0; j < 3; j++ ){
                 printf( "S%d : %.2f secondes\n", (j+1), getVoitures[i].temps[j] );

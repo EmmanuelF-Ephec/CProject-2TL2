@@ -1,26 +1,22 @@
-
-
-
 double randGen(int j, int shm){
-	double s;
-	int i;
+	double temps;
 	int shmid = shm;
-	//int length = sizeof(tempsTour) / sizeof(tempsTour[0]);
 	struct Voiture *getVoitures;
 	if ((getVoitures = shmat(shmid, 0, 0)) == NULL) {
    		printf("Erreur : shmat\n");	
 	}
-	getVoitures[j].temps[3] = 0;
+	size_t nombreSecteur = sizeof(getVoitures[j].temps)/sizeof(getVoitures[j].temps[0]) - 1;
+	getVoitures[j].temps[nombreSecteur] = 0;
 	srand(time(NULL)*getVoitures[j].id);
 
-	for (i = 0; i < 3; i++ ){
-		s = rand() % 1600;
-		s = ( s / 100 ) + 35;
-		getVoitures[j].temps[i] = s;
-        //printf( "S%d : %.2f secondes\n", (i+1), getVoitures[j].temps[i] );
-		getVoitures[j].temps[3] += s;
+	for (int i = 0; i < nombreSecteur; i++ ){
+		temps = rand() % 1600;
+		temps = ( temps / 100 ) + 35;
+		if (getVoitures[j].temps[i] < temps) {
+			getVoitures[j].temps[i] = temps;
+		}
+		getVoitures[j].temps[nombreSecteur] += temps;
 	}
-	//printf( "Temps du tour : %.2f secondes\n", getVoitures[j].temps[3] );
 	return 0;
 }
 
@@ -33,5 +29,5 @@ void tour(int nbreTours, int shmid, int j){
 		randGen(j, shmid);
 		//best()
 	}
-	//printf("%d\n", getVoitures[5].id);
+
 }
