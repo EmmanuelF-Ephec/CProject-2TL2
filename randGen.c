@@ -1,40 +1,36 @@
-double randGen(int j, int shm){
+void randGen(int numVoiture, int shm){
 	double temps;
-	int shmid = shm;
-	struct Voiture *getVoitures;
-	int nombreSecteur = 3;
-	srand(time(NULL)*getVoitures[j].id);
+	double tempsTour;
 
-	for (int i = 0; i < nombreSecteur; i++ ){
+	struct Voiture *setVoitures;
+	if ((setVoitures = shmat(shm, 0, 0)) == NULL) {
+   		printf("Erreur : shmat\n");	
+	}
+	tempsTour = 0;
+	for (int numSecteur = 0; numSecteur < 3; numSecteur++ ){
+		sleep(1);
+		srand(time(NULL)*setVoitures[numVoiture].id);
 		temps = rand() % 1600;
 		temps = ( temps / 100 ) + 35;
-		best(j, shmid, i, temps);
-		// getVoitures[j].temps[i] = temps;
-		getVoitures[j].temps[nombreSecteur] += temps;	
-	best(j, shmid, 3, getVoitures[j].temps[nombreSecteur]);
-	return 0;
+		tempsTour += temps;
+		if (setVoitures[numVoiture].meilleursTemps[numSecteur] > temps || setVoitures[numVoiture].meilleursTemps[numSecteur] == 0) {
+			setVoitures[numVoiture].meilleursTemps[numSecteur] = temps;
+		}
+	}
+	if (setVoitures[numVoiture].meilleursTemps[3] > tempsTour || setVoitures[numVoiture].meilleursTemps[3] == 0) {
+			setVoitures[numVoiture].meilleursTemps[3] = tempsTour;
+	}
 }
 
-void tour(int nbreTours, int shmid, int j){
+void tour(int nbreTours, int shmid, int numVoiture){
+
 	struct Voiture *getVoitures;
 	if ((getVoitures = shmat(shmid, 0, 0)) == NULL) {
    		printf("Erreur : shmat\n");	
 	}
-	for(int i = 0; i < nbreTours; i++){
-		randGen(j, shmid);
-		//best()
+
+	for(int cptTour = 0; cptTour < nbreTours; cptTour++){
+		randGen(numVoiture, shmid);
 	}
 
-}
-
-void best(int j, int shmid, int s, double nvTemps) {
-	struct Voiture *setVoitures;
-	if ((setVoitures = shmat(shmid, 0, 0)) == NULL) {
-   		printf("Erreur : shmat\n");	
-	}
-	printf("Le nouveau %.2F et l'ancien %.2F\n", nvTemps,setVoitures[j].temps[s]);
-	if (setVoitures[j].temps[s] > nvTemps) {
-		setVoitures[j].temps[s] = nvTemps;
-	}
-	printf("Le nouveau %.2F\n", setVoitures[j].temps[s]);
 }
