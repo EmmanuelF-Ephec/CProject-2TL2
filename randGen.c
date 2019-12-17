@@ -9,7 +9,7 @@ void randGen(int numVoiture, int shm){
 	tempsTour = 0;
 	for (int numSecteur = 0; numSecteur < 3; numSecteur++ ){
 		sleep(1);
-		srand(time(NULL)*setVoitures[numVoiture].id);
+		srand(time(NULL)*setVoitures[numVoiture].id*numSecteur);
 		temps = rand() % 1600;
 		temps = ( temps / 100 ) + 35;
 		tempsTour += temps;

@@ -1,6 +1,6 @@
 #include "struct.h"
 #include <stdio.h>
-#include  <string.h>
+#include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/ipc.h>
