@@ -10,29 +10,31 @@ void forkVoitures(int tab[20], int shm, size_t nombreVoiture) {
         printf("Erreur : shmat\n");
     }
 
-    for (numVoiture = 0; numVoiture < 5;numVoiture++) {
+    for (numVoiture = 0; numVoiture < nombreVoiture;numVoiture++) {
+        getVoitures[numVoiture].id = tab[numVoiture];
+    }
+
+    for (numVoiture = 0; numVoiture < nombreVoiture;numVoiture++) {
         if ((pid_fils = fork()) == -1) {
             printf("Erreur : fork");
         };
 
-        if (pid_fils == 0) {
-            getVoitures[numVoiture].id = tab[numVoiture];
-            tour(3, shmid,numVoiture);
+        if (pid_fils == 0) {//Si je suis une voiture
+            rouler(shmid,numVoiture);
             exit(0);
         }
     }
-    if (pid_fils > 0) {
+    if (pid_fils > 0) {//Si je suis le père (l'afficheur)
         int i,j;
         struct Voiture c;
         struct Voiture classement[nombreVoiture];
 
-        for (int cpt = 0;cpt<3;cpt++) {
+        for (compteur = 0;compteur<trigger;compteur++) {
             sleep(2);
-            memcpy(classement, getVoitures, 5*sizeof(struct Voiture));
+            memcpy(classement, getVoitures, nombreVoiture*sizeof(struct Voiture));
 
             for(i=0;i<nombreVoiture-1;i++) {
                     for(j=i+1;j<nombreVoiture;j++) {
-                        //printf("%.2f _ %.2f\n",classement[i].meilleursTemps[3], classement[j].meilleursTemps[3] );
                         if ( classement[i].meilleursTemps[3] > classement[j].meilleursTemps[3]) {
                             c = classement[i];
                             classement[i] = classement[j];
@@ -40,8 +42,8 @@ void forkVoitures(int tab[20], int shm, size_t nombreVoiture) {
                         }
                     }
             }
-            printf("Tour %d\n",cpt+1);
-           for (int cptVoiture = 0;cptVoiture<5;cptVoiture++) {
+            printf("Affichage n°%d\n",compteur+1);
+            for (int cptVoiture = 0;cptVoiture<nombreVoiture;cptVoiture++) {
                 printf("Voiture n°%d\n", classement[cptVoiture].id );
                 for (numSecteurs = 0; numSecteurs < 3; numSecteurs++ ){
                     printf( "Meilleur temps S%d : %.2f secondes\n", (numSecteurs+1), classement[cptVoiture].meilleursTemps[numSecteurs] );

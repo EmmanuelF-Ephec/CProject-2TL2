@@ -9,7 +9,7 @@ void randGen(int numVoiture, int shm){
 	tempsTour = 0;
 	for (int numSecteur = 0; numSecteur < 3; numSecteur++ ){
 		sleep(1);
-		srand(time(NULL)*setVoitures[numVoiture].id*numSecteur);
+		srand(time(NULL)*setVoitures[numVoiture].id*(numSecteur+1));
 		temps = rand() % 1600;
 		temps = ( temps / 100 ) + 35;
 		tempsTour += temps;
@@ -30,7 +30,19 @@ void tour(int nbreTours, int shmid, int numVoiture){
 	}
 
 	for(int cptTour = 0; cptTour < nbreTours; cptTour++){
+		printf("Tour %d", cptTour);
 		randGen(numVoiture, shmid);
 	}
 
+}
+
+void rouler (int shmid, int numVoiture) {
+	struct Voiture *getVoitures;
+	if ((getVoitures = shmat(shmid, 0, 0)) == NULL) {
+   		printf("Erreur : shmat\n");	
+	}
+
+	while (compteur < trigger) {
+		randGen(numVoiture, shmid);
+	}
 }
