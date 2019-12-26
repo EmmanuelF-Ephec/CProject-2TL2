@@ -41,7 +41,7 @@ void rouler (int shmid, int numVoiture) {
 	if ((getVoitures = shmat(shmid, 0, 0)) == NULL) {
    		printf("Erreur : shmat\n");	
 	}
-
+	compteur = 0;
 	while (compteur < trigger) {
 		randGen(numVoiture, shmid);
 	}
