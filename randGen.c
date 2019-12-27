@@ -1,22 +1,39 @@
 void randGen(int numVoiture, int shm){
 	double temps;
 	double tempsTour;
+	int numSecteur = 0;
 
 	struct Voiture *setVoitures;
 	if ((setVoitures = shmat(shm, 0, 0)) == NULL) {
    		printf("Erreur : shmat\n");	
 	}
 	tempsTour = 0;
-	for (int numSecteur = 0; numSecteur < 3; numSecteur++ ){
+	while (numSecteur < 3 || setVoitures[numVoiture].estOut != 1) {
 		sleep(1);
 		srand(time(NULL)*setVoitures[numVoiture].id*(numSecteur+1));
+
 		double temps =(double)(genRandomNbr(3499, 4999)/100.00);
 		tempsTour += temps;
-		if (setVoitures[numVoiture].meilleursTemps[numSecteur] > temps || setVoitures[numVoiture].meilleursTemps[numSecteur] == 0) {
-			setVoitures[numVoiture].meilleursTemps[numSecteur] = temps;
+
+		if (crash() == 1)  {
+			setVoitures[numVoiture].estOut = 1;
 		}
+
+		if (numSecteur == 3) {	
+			if (stand() == 1) {
+				setVoitures[numVoiture].auStand++;
+				double tempsArret = (double) (genRandomNbr(199, 399) / 100.00);
+				temps += tempsArret;
+				tempsTour += tempsArret;
+			}
+		}
+
+		if (setVoitures[numVoiture].meilleursTemps[numSecteur] > temps || setVoitures[numVoiture].meilleursTemps[numSecteur] == 0) {
+			setVoitures[numVoiture].meilleursTemps[numSecteur]  = temps;
+		}
+		numSecteur++;
 	}
-	if (setVoitures[numVoiture].meilleursTemps[3] > tempsTour || setVoitures[numVoiture].meilleursTemps[3] == 0) {
+	if ((setVoitures[numVoiture].meilleursTemps[3] > tempsTour || setVoitures[numVoiture].meilleursTemps[3] == 0) && setVoitures[numVoiture].estOut != 1 ) {
 			setVoitures[numVoiture].meilleursTemps[3] = tempsTour;
 	}
 }
@@ -37,17 +54,16 @@ int genRandomNbr(int nbrMin, int nbrMax) {
     return randNbr;
 }
 
-int crash(int index) { // Probabilité de crash : 1/300 par secteur
+int crash() { // Probabilité de crash : 1/300 par secteur
 	int crash = 0;
 	int randNbr = genRandomNbr(0,300);
 	if (randNbr < 2) {
-		printf("Crash");
 		crash = 1;
 	}
 	return crash;
 }
 
-int stand(int index) { // Probabilité de passage au stand : 15%
+int stand() { // Probabilité de passage au stand : 15%
 	int stand = 0;
 	int randNbr = genRandomNbr(0,99);
 	if (randNbr < 16) {
