@@ -1,10 +1,8 @@
-void forkVoitures(int tab[20], int shm, size_t nombreVoiture) {
+void forkVoitures(int tab[20], int shmid, size_t nombreVoiture) {
     int pid_fils;//Identification entre processus père et fils
     int pere = getpid();
 
-    int shmid = shm;
-
-    int numVoiture, numSecteurs;//Varaible de comptage
+    int numVoiture, numSecteurs;//Variables de comptage
     struct Voiture *getVoitures;//Adresses d'accès à la mémoire partagée
     if ((getVoitures = shmat(shmid, 0, 0)) == NULL) {
         printf("Erreur : shmat\n");
@@ -57,6 +55,6 @@ void forkVoitures(int tab[20], int shm, size_t nombreVoiture) {
             for (numSecteurs = 0; numSecteurs < 4; numSecteurs++ ){
                 classements[i].meilleursTemps[numSecteurs] = classement[i].meilleursTemps[numSecteurs];
 	        }
-        }//Copie du classement local dans le classement en varaible générale
+        }//Copie du classement local dans le classement en variable générale
     }
 }

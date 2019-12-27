@@ -1,10 +1,34 @@
 #include "library.h"
 
+void clearShm(int key){
+    int nbrDeShmAClear = 3;
+    int nombreVoiture = 20;
+    int shmid;
+    struct Voiture *clearVoitures;
+    for(int i = 0; i < nbrDeShmAClear; i++){
+        if ((shmid = shmget(key, nombreVoiture*sizeof(clearVoitures) , IPC_CREAT | 0666 )) == -1) {
+            printf("Erreur : shmget\n");
+        };
+        if ((clearVoitures = shmat(shmid, 0, 0)) == NULL) {
+            printf("Erreur : shmat\n");
+        }
+        for(int j = 0; j < nombreVoiture; j++){
+            for(int k = 0; k < 4; k++){
+                clearVoitures[j].meilleursTemps[k] = 0;
+            }
+        }
+        key++;
+        nombreVoiture -= 5;
+    }
+}
+
 int main (int argc, char *argv[]) {
     int key = 290; // Clé d'accès à la mémoire partagée
     int shmid;//Id pour accèder à la mémoire partagée
     struct Voiture *refVoitures;//Référence pour la quantité de mémoire nécessaire à l'alocation de la mé&moire partagée
     int i;//Variable de comptage 
+
+    clearShm(key);
 
     //------------------------------------------Q1----------------------------------------------------------
     int voitures[20] = { 7, 99, 5, 16, 8, 20, 4, 55, 10, 26, 44, 77, 11, 18, 23, 33, 3, 27, 63, 88};//Les voitures inscrites
@@ -53,9 +77,14 @@ int main (int argc, char *argv[]) {
 
     printf("Q3\n");
     forkVoitures(voituresQ3, shmid, nombreVoiture);
-    for (i=0;i<10;i++) {
-        voituresQ3[i] = classements[i].id;
-        printf("%d : %d - %.2f\n",i+1,voituresQ3[i],classements[i].meilleursTemps[3]);
+
+    //------------------------------------Affichage post-qualifications-------------------------------------
+
+    printf("Grille de départ de la course :\n");
+    for (i=0;i<20;i++) {
+        voitures[i] = classements[i].id;
+        printf("%d : %d - %.2f\n",i+1,voituresQ2[i],classements[i].meilleursTemps[3]);
     }
+
     return 0;
 }

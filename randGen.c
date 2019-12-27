@@ -22,20 +22,6 @@ void randGen(int numVoiture, int shm){
 	}
 }
 
-void tour(int nbreTours, int shmid, int numVoiture){
-
-	struct Voiture *getVoitures;
-	if ((getVoitures = shmat(shmid, 0, 0)) == NULL) {
-   		printf("Erreur : shmat\n");	
-	}
-
-	for(int cptTour = 0; cptTour < nbreTours; cptTour++){
-		printf("Tour %d", cptTour);
-		randGen(numVoiture, shmid);
-	}
-
-}
-
 void rouler (int shmid, int numVoiture) {
 	struct Voiture *getVoitures;
 	if ((getVoitures = shmat(shmid, 0, 0)) == NULL) {
