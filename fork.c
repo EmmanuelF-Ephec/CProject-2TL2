@@ -10,6 +10,8 @@ void forkVoitures(int tab[20], int shmid, size_t nombreVoiture) {
 
     for (numVoiture = 0; numVoiture < nombreVoiture;numVoiture++) {
         getVoitures[numVoiture].id = tab[numVoiture];//Initialisation en mémoire partagée des numéros de voitures
+        getVoitures[numVoiture].auStand = 0;
+        getVoitures[numVoiture].estOut = 0;
     }
 
     for (numVoiture = 0; numVoiture < nombreVoiture;numVoiture++) {
