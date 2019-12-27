@@ -6,7 +6,7 @@ void clearShm(int key){
     int shmid;
     struct Voiture *clearVoitures;
     for(int i = 0; i < nbrDeShmAClear; i++){
-        if ((shmid = shmget(key, nombreVoiture*sizeof(clearVoitures) , IPC_CREAT | 0666 )) == -1) {
+        if ((shmid = shmget((key+i), nombreVoiture*sizeof(clearVoitures) , IPC_CREAT | 0666 )) == -1) {
             printf("Erreur : shmget\n");
         };
         if ((clearVoitures = shmat(shmid, 0, 0)) == NULL) {
@@ -17,7 +17,6 @@ void clearShm(int key){
                 clearVoitures[j].meilleursTemps[k] = 0;
             }
         }
-        key++;
         nombreVoiture -= 5;
     }
 }
@@ -83,7 +82,7 @@ int main (int argc, char *argv[]) {
     printf("Grille de départ de la course :\n");
     for (i=0;i<20;i++) {
         voitures[i] = classements[i].id;
-        printf("%d : %d - %.2f\n",i+1,voituresQ2[i],classements[i].meilleursTemps[3]);
+        printf("%d : %d - %.2f\n",i+1,voitures[i],classements[i].meilleursTemps[3]);
     }
 
     return 0;
