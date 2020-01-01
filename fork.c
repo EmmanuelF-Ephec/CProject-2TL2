@@ -31,6 +31,7 @@ void forkVoitures(int tab[20], int shmid, size_t nombreVoiture) {
 
         for (compteur = 0;compteur<trigger;compteur++) {
             sleep(2);
+            system("clear");
             memcpy(classement, getVoitures, nombreVoiture*sizeof(struct Voiture));//Copie de la mémoire partagée dans le classement (en variable locale)
 
             for(i=0;i<nombreVoiture;i++) {

@@ -7,6 +7,6 @@ struct Voiture {
 };
 
 int compteur;
-int trigger = 1;
+int trigger = 3;
 
 struct Voiture classements[20];
