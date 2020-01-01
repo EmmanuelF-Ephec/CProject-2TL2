@@ -21,7 +21,7 @@ int stand() { // Probabilité de passage au stand : 15%
 	return stand;
 }
 
-void randGen(int numVoiture, int shm){
+void randGen(int numVoiture, int shm, int id){
 	double temps;
 	double tempsTour;
 
@@ -58,9 +58,8 @@ void randGen(int numVoiture, int shm){
 	}*/
 	for (int numSecteur = 0; numSecteur < 3; numSecteur++ ){
 		sleep(1);
-		srand(time(NULL)*setVoitures[numVoiture].id*(numSecteur+1));
-		temps = rand() % 1600;
-		temps = ( temps / 100 ) + 35;
+		srand(numSecteur*id*setVoitures[numVoiture].id);
+		temps = (double)(genRandomNbr(3499, 4999)/100.00);
 		tempsTour += temps;
 		if (setVoitures[numVoiture].meilleursTemps[numSecteur] > temps || setVoitures[numVoiture].meilleursTemps[numSecteur] == 0) {
 			setVoitures[numVoiture].meilleursTemps[numSecteur] = temps;
@@ -71,13 +70,13 @@ void randGen(int numVoiture, int shm){
 	}
 }
 
-void rouler (int shmid, int numVoiture) {
+void rouler (int shmid, int numVoiture, int id) {
 	struct Voiture *getVoitures;
 	if ((getVoitures = shmat(shmid, 0, 0)) == NULL) {
    		printf("Erreur : shmat\n");	
 	}
 	int compteur = 0;
 	while (compteur < trigger) {
-		randGen(numVoiture, shmid);
+		randGen(numVoiture, shmid, id);
 	}
 }

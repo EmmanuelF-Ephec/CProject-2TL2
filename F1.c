@@ -22,7 +22,7 @@ void clearShm(int key){
 }
 
 int main (int argc, char *argv[]) {
-    int key = 290; // Clé d'accès à la mémoire partagée
+    int key = 280; // Clé d'accès à la mémoire partagée
     int shmid;//Id pour accèder à la mémoire partagée
     struct Voiture *refVoitures;//Référence pour la quantité de mémoire nécessaire à l'alocation de la mé&moire partagée
     int i;//Variable de comptage 
@@ -80,7 +80,9 @@ int main (int argc, char *argv[]) {
     //------------------------------------Affichage post-qualifications-------------------------------------
 
     printf("Grille de départ de la course :\n");
+    int grille[10];
     for (i=0;i<20;i++) {
+        grille[i] = classements[i].id;
         voitures[i] = classements[i].id;
         printf("%d : %d - %.2f\n",i+1,voitures[i],classements[i].meilleursTemps[3]);
     }

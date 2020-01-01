@@ -20,7 +20,8 @@ void forkVoitures(int tab[20], int shmid, size_t nombreVoiture) {
         };//Création d'autant de processus fils que nécessaire(=nombre de voitures) avec traitement en cas d'erreur
 
         if (pid_fils == 0) {//Si je suis une voiture
-            rouler(shmid,numVoiture);
+            int id = getpid();
+            rouler(shmid,numVoiture,id);
             exit(0);
         }
     }
@@ -30,8 +31,8 @@ void forkVoitures(int tab[20], int shmid, size_t nombreVoiture) {
         struct Voiture classement[nombreVoiture];//Classement des voitures
 
         for (compteur = 0;compteur<trigger;compteur++) {
-            sleep(2);
-            system("clear");
+            sleep(1);
+            //system("clear");
             memcpy(classement, getVoitures, nombreVoiture*sizeof(struct Voiture));//Copie de la mémoire partagée dans le classement (en variable locale)
 
             for(i=0;i<nombreVoiture;i++) {
