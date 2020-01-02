@@ -44,12 +44,10 @@ void forkVoitures(int tab[20], int shmid, size_t nombreVoiture) {
             }//Tri du classement
 
             printf("Affichage n°%d\n",compteur+1);
+            printf("\n   Voiture   |   Temps S1    |    Temps S2   |    Temps S3   |   Temps tour   |\n");
             for (int cptVoiture = 0;cptVoiture<nombreVoiture;cptVoiture++) {
-                printf("Voiture n°%d\n", classement[cptVoiture].id );
-                for (numSecteurs = 0; numSecteurs < 3; numSecteurs++ ){
-                    printf( "Meilleur temps S%d : %.2f secondes\n", (numSecteurs+1), classement[cptVoiture].meilleursTemps[numSecteurs] );
-	            }
-	            printf( "Meilleur temps au tour : %.2f secondes\n", classement[cptVoiture].meilleursTemps[3] );
+                printf("     n°%d %s|     %.2f     |     %.2f     |     %.2f     |     %.2f     |\n", 
+                classement[cptVoiture].id, ((classement[cptVoiture].id < 10) ? "    " : "   "), classement[cptVoiture].meilleursTemps[0], classement[cptVoiture].meilleursTemps[1], classement[cptVoiture].meilleursTemps[2], classement[cptVoiture].meilleursTemps[3]);
             }//affichage instantané de l'état de la qualification
         }
 

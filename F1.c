@@ -86,9 +86,11 @@ int main (int argc, char *argv[]) {
 
     int voituresQ2[15];//les voitures encore en lisse après Q1
     sleep(2);
+    printf("\n\nPlace | n°   | Meilleur temps\n");
     for (i=0;i<15;i++) {//récupération des id des 15 meilleures voitures de Q1 et affichage avec leur meilleur temps au tour
         voituresQ2[i] = classements[i].id;
-        printf("%d : %d - %.2f\n",i+1,voituresQ2[i],classements[i].meilleursTemps[3]);
+         printf(" %d%s| %d%s|   %.2f\n" ,i+1,(i < 9) ? "    " : "   ", voituresQ2[i], (voituresQ2[i] < 9) ? "    " : "   ", classements[i].meilleursTemps[3]);
+       // printf("%d : %d - %.2f\n",i+1,voituresQ2[i],classements[i].meilleursTemps[3]);
     }
 
     nombreVoiture = sizeof(voituresQ2) / sizeof(voituresQ2[0]);//ajustement du nombre de voitures au départ de Q2
@@ -105,9 +107,11 @@ int main (int argc, char *argv[]) {
 
     int voituresQ3[10];//les voitures encore en lisse après Q2
     sleep(2);
+    printf("\n\nPlace | n°   | Meilleur temps\n");
     for (i=0;i<10;i++) {//récupération des id des 10 meilleures voitures de Q1 et affichage avec leur meilleur temps au tour
         voituresQ3[i] = classements[i].id;
-        printf("%d : %d - %.2f\n",i+1,voituresQ2[i],classements[i].meilleursTemps[3]);
+        //printf("%d : %d - %.2f\n",i+1,voituresQ2[i],classements[i].meilleursTemps[3]);
+        printf(" %d%s| %d%s|   %.2f\n" ,i+1,(i < 9) ? "    " : "   ", voituresQ2[i], (voituresQ2[i] < 9) ? "    " : "   ", classements[i].meilleursTemps[3]);
     }
 
     nombreVoiture = sizeof(voituresQ3) / sizeof(voituresQ3[0]);//ajustement du nombre de voitures au départ de Q3
@@ -123,10 +127,11 @@ int main (int argc, char *argv[]) {
     //----------------------------------------Course---------------------------------------------------------
 
     printf("Grille de départ de la course :\n");
+    printf("Place | n°   | Meilleur temps\n");
     int voitures[20];//les voitures inscrites à la course
     for (i=0;i<20;i++) {//récupération de l'ordre du classement des voitures après les qualifications afin d'afficher la grille de départ et les meilleurs temps au tour respectifs des voitures
         voitures[i] = classements[i].id;
-        printf("%d : %d - %.2f\n",i+1,voitures[i],classements[i].meilleursTemps[3]);
+        printf(" %d%s| %d%s|   %.2f\n" ,i+1,(i < 9) ? "    " : "   ", voitures[i], (voitures[i] < 9) ? "    " : "   ", classements[i].meilleursTemps[3]);
     }
 
     sleep(2);
@@ -150,4 +155,8 @@ int main (int argc, char *argv[]) {
     }
 
     return 0;
+}
+
+void affichageClassement(){
+
 }
