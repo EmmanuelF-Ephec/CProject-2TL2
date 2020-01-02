@@ -44,9 +44,11 @@ int main (int argc, char *argv[]) {
 
     int voituresQ2[15];
     sleep(2);
+    printf("\n\nPlace | n°   | Meilleur temps\n");
     for (i=0;i<15;i++) {
         voituresQ2[i] = classements[i].id;
-        printf("%d : %d - %.2f\n",i+1,voituresQ2[i],classements[i].meilleursTemps[3]);
+         printf(" %d%s| %d%s|   %.2f\n" ,i+1,(i < 9) ? "    " : "   ", voituresQ2[i], (voituresQ2[i] < 9) ? "    " : "   ", classements[i].meilleursTemps[3]);
+       // printf("%d : %d - %.2f\n",i+1,voituresQ2[i],classements[i].meilleursTemps[3]);
     }
 
     //------------------------------------------Q2----------------------------------------------------------
@@ -61,9 +63,11 @@ int main (int argc, char *argv[]) {
     forkVoitures(voituresQ2, shmid, nombreVoiture);
     int voituresQ3[10];
     sleep(2);
+    printf("\n\nPlace | n°   | Meilleur temps\n");
     for (i=0;i<10;i++) {
         voituresQ3[i] = classements[i].id;
-        printf("%d : %d - %.2f\n",i+1,voituresQ2[i],classements[i].meilleursTemps[3]);
+        //printf("%d : %d - %.2f\n",i+1,voituresQ2[i],classements[i].meilleursTemps[3]);
+        printf(" %d%s| %d%s|   %.2f\n" ,i+1,(i < 9) ? "    " : "   ", voituresQ2[i], (voituresQ2[i] < 9) ? "    " : "   ", classements[i].meilleursTemps[3]);
     }
 
     //------------------------------------------Q3----------------------------------------------------------
@@ -80,12 +84,17 @@ int main (int argc, char *argv[]) {
     //------------------------------------Affichage post-qualifications-------------------------------------
 
     printf("Grille de départ de la course :\n");
+    printf("Place | n°   | Meilleur temps\n");
     int grille[10];
     for (i=0;i<20;i++) {
         grille[i] = classements[i].id;
         voitures[i] = classements[i].id;
-        printf("%d : %d - %.2f\n",i+1,voitures[i],classements[i].meilleursTemps[3]);
+        printf(" %d%s| %d%s|   %.2f\n" ,i+1,(i < 9) ? "    " : "   ", voitures[i], (voitures[i] < 9) ? "    " : "   ", classements[i].meilleursTemps[3]);
     }
 
     return 0;
+}
+
+void affichageClassement(){
+
 }
