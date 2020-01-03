@@ -31,7 +31,7 @@ void forkVoitures(int tab[20], int shmid, size_t nombreVoiture) {
 
         for (compteur = 0;compteur<trigger;compteur++) {//boucle destinée à afficher un nombre fixé de fois les résultats avant de clôturer la scéance de qualification
             sleep(1);
-            memcpy(classement, getVoitures, nombreVoiture*sizeof(struct Voiture));//Copie de la mémoire partagée dans le classement (en variable locale)
+            memcpy(classement, getVoitures, sizeof(classement));//Copie de la mémoire partagée dans le classement (en variable locale)
 
             for(i=0;i<nombreVoiture;i++) {
                 for(j=i+1;j<nombreVoiture;j++) {

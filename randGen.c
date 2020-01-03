@@ -58,7 +58,7 @@ void randGen(int numVoiture, int shm, int id){
 	}*/
 	for (int numSecteur = 0; numSecteur < 3; numSecteur++ ){//génération de temps aléatoires pour les 3 secteurs
 		sleep(1);
-		srand(numSecteur*id*setVoitures[numVoiture].id);
+		srand(time(NULL)*getpid()*(numVoiture+1));
 		temps = (double)(genRandomNbr(3499, 4999)/100.00);
 		tempsTour += temps;
 		if (setVoitures[numVoiture].meilleursTemps[numSecteur] > temps || setVoitures[numVoiture].meilleursTemps[numSecteur] == 0) {
@@ -86,7 +86,8 @@ void randGenCourse(int numVoiture, int shm, int id, int tour, int sem_set_id, in
 	tempsTour = 0;//réinitialisation du temps au tour avant de générer des temps aléatoires pour les 3 secteurs
 	for (int numSecteur = 0; numSecteur < 3; numSecteur++ ){//génération de temps aléatoires pour les 3 secteurs
 		sleep(1);
-		srand(numSecteur*id*voituresIRT[numVoiture].id);
+		//printf("%d - %d - %d",numVoiture,num)
+		srand(time(NULL)*getpid()*(numVoiture+1));
 		temps = (double)(genRandomNbr(3499, 4999)/100.00);
 		tempsTour += temps;
 		if (voituresIRT[numVoiture].meilleursTemps[numSecteur] > temps || voituresIRT[numVoiture].meilleursTemps[numSecteur] == 0) {
