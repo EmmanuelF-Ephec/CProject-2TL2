@@ -30,7 +30,7 @@ void forkVoitures(int tab[20], int shmid, size_t nombreVoiture) {
         struct Voiture classement[nombreVoiture];//Classement des voitures
 
         for (compteur = 0;compteur<trigger;compteur++) {//boucle destinée à afficher un nombre fixé de fois les résultats avant de clôturer la scéance de qualification
-            sleep(1);
+            sleep(2);
             memcpy(classement, getVoitures, sizeof(classement));//Copie de la mémoire partagée dans le classement (en variable locale)
 
             for(i=0;i<nombreVoiture;i++) {
@@ -43,7 +43,7 @@ void forkVoitures(int tab[20], int shmid, size_t nombreVoiture) {
                 }
             }//Tri du classement
 
-            printf("Affichage n°%d\n",compteur+1);
+            printf("\n   Affichage n°%d\n",compteur+1);
             printf("\n   Voiture   |   Temps S1    |    Temps S2   |    Temps S3   |   Temps tour   |\n");
             for (int cptVoiture = 0;cptVoiture<nombreVoiture;cptVoiture++) {
                 printf("     n°%d %s|     %.2f     |     %.2f     |     %.2f     |     %.2f     |\n", 
@@ -103,14 +103,29 @@ void forkCourse(int tab[20], int shmid, size_t nombreVoiture, int sem_set_id){
         }
     }
     if (pid_fils > 0) {//Si je suis le père (l'afficheur)...
-        int validation;//variable de comptage
-        while(validation != 20){//boucle permettant de vérifier que les x tours (défini dans struct.h) ont été effectués par les 20 voitures
-            validation = 0;
-            for(int i = 0; i < 20; i++){
-                validation += getVoitures[i].validation;
+        int compteur;//variable de comptage
+        for(int i = 0; i < nombreToursCourse; i++){//cette boucle tourne autant de fois que précisé dans struct.h
+            while(compteur != (i+1)*20){//Tant que compteur ne vaut pas le multiple de 20 associé au tour actuel (càd tant que chaque voiture n'a pas fait un tour de plus que leur état précédant l'entrée dans la boucle)
+                sleep(1);
+                compteur = 0;
+                for(int j = 0; j < nombreVoiture; j++){
+                    compteur += classementsCourseInstant[i].nombreTour;//calcul de compteur sur base des tours parcourus par les voitures
+                }
             }
-            sleep(5);
+            printf("\n   Classement à l'issue du tour %d\n", (i+1));
+            printf("\n   Voiture   |   Temps S1    |    Temps S2   |    Temps S3   |   Temps tour   |   Temps total   |   Tours    |\n");
+            for (int cptVoiture = 0;cptVoiture<nombreVoiture;cptVoiture++) {
+                printf("     n°%d %s|     %.2f     |     %.2f     |     %.2f     |     %.2f     |     %.2f     %s|     %d     %s|\n", 
+                classementsCourseInstant[cptVoiture].id, ((classementsCourseInstant[cptVoiture].id < 10) ? "    " : "   "), 
+                classementsCourseInstant[cptVoiture].meilleursTemps[0], classementsCourseInstant[cptVoiture].meilleursTemps[1], 
+                classementsCourseInstant[cptVoiture].meilleursTemps[2], classementsCourseInstant[cptVoiture].meilleursTemps[3], 
+                classementsCourseInstant[cptVoiture].tempsTotalCourse, 
+                ((classementsCourseInstant[cptVoiture].tempsTotalCourse < 999.99) ? " " : ""), 
+                classementsCourseInstant[cptVoiture].nombreTour, ((classementsCourseInstant[cptVoiture].nombreTour < 10) ? " " : ""));
+            }//affichage instantané de l'état de la course
         }
+
+        
 
         memcpy(classements, classementsCourseInstant, nombreVoiture*sizeof(struct Voiture));//copie de la shm GID dans le classement (en variable locale)
     }

@@ -99,9 +99,6 @@ void randGenCourse(int numVoiture, int shm, int id, int tour, int sem_set_id, in
 	if ((voituresIRT[numVoiture].meilleursTemps[3] > tempsTour || voituresIRT[numVoiture].meilleursTemps[3] == 0) /*&& voituresIRT[numVoiture].estOut != 1*/ ) {
 			voituresIRT[numVoiture].meilleursTemps[3] = tempsTour;
 	}//enregistrement des meilleurs temps secteur dans la shm
-	if(tour == nombreToursCourse){//validation dans le cas où la voiture vient d'effectuer son dernier tour (cfr fork.c :: ligne 109)
-		voituresIRT[numVoiture].validation = 1;
-	}
 
 	struct sembuf sem_op;//structure nécessaire au fonctionnement des sémaphores
 	/* Décrémentation de la valeur de la sémaphore afin d'assurer qu'un seul fils ne puisse y accéder à la fois */

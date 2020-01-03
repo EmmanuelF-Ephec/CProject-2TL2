@@ -10,8 +10,8 @@ struct Voiture {
 };
 
 int compteur;
-int trigger = 4;
-int nombreToursCourse = 10;
+int trigger = 1;
+int nombreToursCourse = 1;
 int nombreSecteurs = 3;
 
 struct Voiture classements[20];

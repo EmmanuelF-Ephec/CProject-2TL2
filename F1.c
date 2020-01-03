@@ -5,13 +5,34 @@ void clearShm(int key){
     int nombreVoiture = 20;//correspond au nombre initial de voitures lors des qualifications
     int shmid;//id pour accéder à la mémoire partagée
     struct Voiture *clearVoitures;//représente la shm qui nécéssite d'être réinitialisée
+    int shmidInstant;//shmid de la shm GID
+    struct Voiture *clearCourseInstant;//représente la shm GID qui nécéssite d'être réinitialisée
 
+    if ((shmidInstant = shmget(999, nombreVoiture*sizeof(struct Voiture) , IPC_CREAT | 0666 )) == -1) {//récupération du shmid de la shm de gestion instantanée des dépassements
+        printf("Erreur : shmget\n");
+    };
+	if ((clearCourseInstant = shmat(shmidInstant, 0, 0)) == NULL) {//adresse d'accès à la shm de gestion instantanée des dépassements (GID)
+   		printf("Erreur : shmat\n");	
+	}
     if ((shmid = shmget((key+nbrDeShmAClear), nombreVoiture*sizeof(clearVoitures) , IPC_CREAT | 0666 )) == -1) {//récupération du shmid de la shm associée à (key+nbrDeShmAClear) (course)
         printf("Erreur : shmget\n");
     };
     if ((clearVoitures = shmat(shmid, 0, 0)) == NULL) {//récupération de la shm dans la structure clearVoitures
         printf("Erreur : shmat\n");
     }
+
+    for(int i = 0; i < nombreVoiture; i++){//réinitialisation des valeurs introduites dans la shm
+        for(int j = 0; j < 4; j++){
+            clearCourseInstant[i].meilleursTemps[j] = 0;
+        }
+        clearCourseInstant[i].tempsTotalCourse = 0;
+        clearCourseInstant[i].auStand = 0;
+        clearCourseInstant[i].estOut = 0;
+        clearCourseInstant[i].nombreTour = 0;
+        clearCourseInstant[i].id = 0;
+        clearVoitures[i].validation = 0;
+    }
+
     for(int i = 0; i < nombreVoiture; i++){//réinitialisation des valeurs introduites dans la shm
         for(int j = 0; j < 4; j++){
             clearVoitures[i].meilleursTemps[j] = 0;
@@ -79,17 +100,17 @@ int main (int argc, char *argv[]) {
     };//Initialisation du shmid avec traitement en cas d'erreur
     key++;//Augmentation de la clé pour les création de shmid suivantes
 
-    printf("Q1\n");
+    printf("-----------------------------------------------  Q1 :  ----------------------------------------------------------\n");
     forkVoitures(voituresQ1, shmid, nombreVoiture);
 
     //------------------------------------------Q2----------------------------------------------------------
 
     int voituresQ2[15];//les voitures encore en lisse après Q1
-    sleep(2);
-    printf("\n\nPlace | n°   | Meilleur temps\n");
+    sleep(1);
+    printf("\n    Place | n°   | Meilleur temps\n");
     for (i=0;i<15;i++) {//récupération des id des 15 meilleures voitures de Q1 et affichage avec leur meilleur temps au tour
         voituresQ2[i] = classements[i].id;
-         printf(" %d%s| %d%s|   %.2f\n" ,i+1,(i < 9) ? "    " : "   ", voituresQ2[i], (voituresQ2[i] < 9) ? "    " : "   ", classements[i].meilleursTemps[3]);
+         printf("     %d%s| %d%s|   %.2f\n" ,i+1,(i < 9) ? "    " : "   ", voituresQ2[i], (voituresQ2[i] < 9) ? "    " : "   ", classements[i].meilleursTemps[3]);
        // printf("%d : %d - %.2f\n",i+1,voituresQ2[i],classements[i].meilleursTemps[3]);
     }
 
@@ -100,18 +121,18 @@ int main (int argc, char *argv[]) {
     };//Initialisation du shmid avec traitement en cas d'erreur
     key++;//Augmentation de la clé pour les création de shmid suivantes
 
-    printf("Q2\n");
+    printf("\n\n-----------------------------------------------  Q2 :  ----------------------------------------------------------\n");
     forkVoitures(voituresQ2, shmid, nombreVoiture);
 
     //------------------------------------------Q3----------------------------------------------------------
 
     int voituresQ3[10];//les voitures encore en lisse après Q2
-    sleep(2);
-    printf("\n\nPlace | n°   | Meilleur temps\n");
+    sleep(1);
+    printf("\n    Place | n°   | Meilleur temps\n");
     for (i=0;i<10;i++) {//récupération des id des 10 meilleures voitures de Q1 et affichage avec leur meilleur temps au tour
         voituresQ3[i] = classements[i].id;
         //printf("%d : %d - %.2f\n",i+1,voituresQ2[i],classements[i].meilleursTemps[3]);
-        printf(" %d%s| %d%s|   %.2f\n" ,i+1,(i < 9) ? "    " : "   ", voituresQ2[i], (voituresQ2[i] < 9) ? "    " : "   ", classements[i].meilleursTemps[3]);
+        printf("     %d%s| %d%s|   %.2f\n" ,i+1,(i < 9) ? "    " : "   ", voituresQ3[i], (voituresQ3[i] < 9) ? "    " : "   ", classements[i].meilleursTemps[3]);
     }
 
     nombreVoiture = sizeof(voituresQ3) / sizeof(voituresQ3[0]);//ajustement du nombre de voitures au départ de Q3
@@ -121,17 +142,17 @@ int main (int argc, char *argv[]) {
     };//Initialisation du shmid avec traitement en cas d'erreur
     key++;//Augmentation de la clé pour les création de shmid suivantes
 
-    printf("Q3\n");
+    printf("\n\n-----------------------------------------------  Q3 :  ----------------------------------------------------------\n");
     forkVoitures(voituresQ3, shmid, nombreVoiture);
 
     //----------------------------------------Course---------------------------------------------------------
 
-    printf("Grille de départ de la course :\n");
-    printf("Place | n°   | Meilleur temps\n");
+    printf("\n  Grille de départ de la course :\n");
+    printf("\n    Place | n°   | Meilleur temps\n");
     int voitures[20];//les voitures inscrites à la course
     for (i=0;i<20;i++) {//récupération de l'ordre du classement des voitures après les qualifications afin d'afficher la grille de départ et les meilleurs temps au tour respectifs des voitures
         voitures[i] = classements[i].id;
-        printf(" %d%s| %d%s|   %.2f\n" ,i+1,(i < 9) ? "    " : "   ", voitures[i], (voitures[i] < 9) ? "    " : "   ", classements[i].meilleursTemps[3]);
+        printf("     %d%s| %d%s|   %.2f\n" ,i+1,(i < 9) ? "    " : "   ", voitures[i], (voitures[i] < 9) ? "    " : "   ", classements[i].meilleursTemps[3]);
     }
 
     sleep(2);
@@ -142,17 +163,19 @@ int main (int argc, char *argv[]) {
         return -1;
     };//Initialisation du shmid avec traitement en cas d'erreur
 
-    printf("Course :\n");
+    printf("\n\n-----------------------------------------------  Course :  ------------------------------------------------------\n");
     forkCourse(voitures, shmid, nombreVoiture, sem_set_id);
 
     //----------------------------------------Affichage des résultats de la course-----------------------------
-
-    printf("Résultats de la course :\n");
-    voitures[20];
-    for (i=0;i<20;i++) {//récupération du classement final dans voitures et affichage du nombre de tours, du temps total et du meilleur temps au tour de chaque voiture
-        voitures[i] = classements[i].id;
-        printf("%d : Voiture %d - %d tours - Temps total : %.2f s - Meilleur tour : %.2f s\n",i+1,voitures[i],classements[i].nombreTour, classements[i].tempsTotalCourse, classements[i].meilleursTemps[3]);
-    }
+        
+    printf("\n\n  Résultats de la course :\n");
+    printf("\n    Place | n°   | Meilleur temps | Temps total  |\n");
+    for (i=0;i<20;i++) {
+        printf("     %d%s| %d%s|     %.2f     |    %.2f   %s|\n" ,i+1,(i < 9) ? "    " : "   ", classements[i].id,
+        (classements[i].id < 9) ? "    " : "   ", classements[i].meilleursTemps[3], 
+        classements[i].tempsTotalCourse, ((classements[i].tempsTotalCourse < 999.99) ? " " : ""));
+    }//récupération du classement final dans voitures et affichage du nombre de tours, du temps total et du meilleur temps au tour de chaque voiture
+    printf("\n\n\n\n");
 
     return 0;
 }
