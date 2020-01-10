@@ -103,30 +103,32 @@ void forkCourse(int tab[20], int shmid, size_t nombreVoiture, int sem_set_id){
         }
     }
     if (pid_fils > 0) {//Si je suis le père (l'afficheur)...
-        int compteur;//variable de comptage
-        for(int i = 0; i < nombreToursCourse; i++){//cette boucle tourne autant de fois que précisé dans struct.h
-            while(compteur != (i+1)*20){//Tant que compteur ne vaut pas le multiple de 20 associé au tour actuel (càd tant que chaque voiture n'a pas fait un tour de plus que leur état précédant l'entrée dans la boucle)
-                sleep(1);
-                compteur = 0;
-                for(int j = 0; j < nombreVoiture; j++){
-                    compteur += classementsCourseInstant[i].nombreTour;//calcul de compteur sur base des tours parcourus par les voitures
+        compteur = 0;//variable de comptage
+        int flag = 0;
+        while (flag == 0) {
+            sleep(2);
+            for (int i = 0;i<nombreVoiture;i++) {
+                if (classementsCourseInstant[i].nombreTour >= nombreToursCourse) {
+                    compteur ++;
                 }
             }
-            printf("\n   Classement à l'issue du tour %d\n", (i+1));
-            printf("\n   Voiture   |   Temps S1    |    Temps S2   |    Temps S3   |   Temps tour   |   Temps total   |   Tours    |\n");
-            for (int cptVoiture = 0;cptVoiture<nombreVoiture;cptVoiture++) {
-                printf("     n°%d %s|     %.2f     |     %.2f     |     %.2f     |     %.2f     |     %.2f     %s|     %d     %s|\n", 
-                classementsCourseInstant[cptVoiture].id, ((classementsCourseInstant[cptVoiture].id < 10) ? "    " : "   "), 
-                classementsCourseInstant[cptVoiture].meilleursTemps[0], classementsCourseInstant[cptVoiture].meilleursTemps[1], 
-                classementsCourseInstant[cptVoiture].meilleursTemps[2], classementsCourseInstant[cptVoiture].meilleursTemps[3], 
-                classementsCourseInstant[cptVoiture].tempsTotalCourse, 
-                ((classementsCourseInstant[cptVoiture].tempsTotalCourse < 999.99) ? " " : ""), 
-                classementsCourseInstant[cptVoiture].nombreTour, ((classementsCourseInstant[cptVoiture].nombreTour < 10) ? " " : ""));
+            if (compteur == nombreVoiture) {
+                flag = 1;
+            }
+            if (flag == 0 && compteur <= nombreToursCourse) {
+                //printf("\n   Classement à l'issue du tour %d\n", (i+1));
+                printf("\n   Voiture   |   Temps S1    |    Temps S2   |    Temps S3   |   Temps tour   |   Temps total   |   Tours    |\n");
+                for (int cptVoiture = 0;cptVoiture<nombreVoiture;cptVoiture++) {
+                    printf("     n°%d %s|     %.2f     |     %.2f     |     %.2f     |     %.2f     |     %.2f     %s|     %d     %s|\n", 
+                    classementsCourseInstant[cptVoiture].id, ((classementsCourseInstant[cptVoiture].id < 10) ? "    " : "   "), 
+                    classementsCourseInstant[cptVoiture].meilleursTemps[0], classementsCourseInstant[cptVoiture].meilleursTemps[1], 
+                    classementsCourseInstant[cptVoiture].meilleursTemps[2], classementsCourseInstant[cptVoiture].meilleursTemps[3], 
+                    classementsCourseInstant[cptVoiture].tempsTotalCourse, 
+                    ((classementsCourseInstant[cptVoiture].tempsTotalCourse < 999.99) ? " " : ""), 
+                    classementsCourseInstant[cptVoiture].nombreTour+1, ((classementsCourseInstant[cptVoiture].nombreTour < 10) ? " " : ""));
+                }
             }//affichage instantané de l'état de la course
         }
-
-        
-
         memcpy(classements, classementsCourseInstant, nombreVoiture*sizeof(struct Voiture));//copie de la shm GID dans le classement (en variable locale)
     }
 }

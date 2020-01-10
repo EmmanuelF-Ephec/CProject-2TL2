@@ -21,13 +21,20 @@ int stand() {//Probabilité de passage au stand : 15%
 	return stand;
 }
 
-void randGen(int numVoiture, int shm, int id){
+int randGen(int numVoiture, int shm, int id){
 	double temps;//récupère un temps aléatoire d'un secteur
 	double tempsTour;//additionne les temps aléatoires générés de chaque secteur pour avoir un temps aléatoire au tour
 
 	struct Voiture *setVoitures;
 	if ((setVoitures = shmat(shm, 0, 0)) == NULL) {//Adresses d'accès à la mémoire partagée pour la création des temps
-   		printf("Erreur : shmat\n");	
+   		printf("Erreur : shmat randgen voiture\n");
+		return -1;
+	}
+
+	struct Best *best;
+	if ((best = shmat(shmBest, 0, 0)) == NULL) {
+   		printf("Erreur : shmat randgen best\n");
+		return -1;
 	}
 	tempsTour = 0;//réinitialisation du temps au tour avant de générer des temps aléatoires pour les 3 secteurs
 	/*int numSecteur = 0;
@@ -59,28 +66,34 @@ void randGen(int numVoiture, int shm, int id){
 	for (int numSecteur = 0; numSecteur < 3; numSecteur++ ){//génération de temps aléatoires pour les 3 secteurs
 		sleep(1);
 		srand(time(NULL)*getpid()*(numVoiture+1));
-		temps = (double)(genRandomNbr(3499, 4999)/100.00);
+		temps = (double)(genRandomNbr((tempsSecteur-5)*100, (tempsSecteur+5)*100)/100.00);
 		tempsTour += temps;
 		if (setVoitures[numVoiture].meilleursTemps[numSecteur] > temps || setVoitures[numVoiture].meilleursTemps[numSecteur] == 0) {
 			setVoitures[numVoiture].meilleursTemps[numSecteur] = temps;
 		}//enregistrement des meilleurs temps secteur dans la shm
+		if (best[0].best[numSecteur] > temps || best[0].best[numSecteur] == 0) {
+			best[0].best[numSecteur] = temps;
+			best[0].id[numSecteur] = setVoitures[numVoiture].id;
+		}
 	}
 	if ((setVoitures[numVoiture].meilleursTemps[3] > tempsTour || setVoitures[numVoiture].meilleursTemps[3] == 0) /*&& setVoitures[numVoiture].estOut != 1*/ ) {
-			setVoitures[numVoiture].meilleursTemps[3] = tempsTour;
+		setVoitures[numVoiture].meilleursTemps[3] = tempsTour;
 	}//enregistrement du meilleur temps au tour dans la shm
 }
 
-void randGenCourse(int numVoiture, int shm, int id, int tour, int sem_set_id, int shmInstant){
+int randGenCourse(int numVoiture, int shm, int id, int tour, int sem_set_id, int shmInstant){
 	double temps;//récupère un temps aléatoire d'un secteur
 	double tempsTour;//additionne les temps aléatoires générés de chaque secteur pour avoir un temps aléatoire au tour
 
 	struct Voiture *voituresIRT;
 	if ((voituresIRT = shmat(shm, 0, 0)) == NULL) {//Adresses d'accès à la mémoire partagée pour la création des temps
-   		printf("Erreur : shmat\n");	
+   		printf("Erreur : shmat randgencourse voiture\n");	
+		return -1;
 	}
 	struct Voiture *classementsCourseInstant;
 	if ((classementsCourseInstant = shmat(shmInstant, 0, 0)) == NULL) {//Adresses d'accès à la shm GID
-   		printf("Erreur : shmat\n");	
+   		printf("Erreur : shmat randgencourse instant\n");
+		return -1;
 	}
 
 	tempsTour = 0;//réinitialisation du temps au tour avant de générer des temps aléatoires pour les 3 secteurs
@@ -97,7 +110,7 @@ void randGenCourse(int numVoiture, int shm, int id, int tour, int sem_set_id, in
 	voituresIRT[numVoiture].tempsTotalCourse += tempsTour;//enregistrement tu temps total pour la course
 	voituresIRT[numVoiture].nombreTour = tour;//incrémentation du nombre de tours
 	if ((voituresIRT[numVoiture].meilleursTemps[3] > tempsTour || voituresIRT[numVoiture].meilleursTemps[3] == 0) /*&& voituresIRT[numVoiture].estOut != 1*/ ) {
-			voituresIRT[numVoiture].meilleursTemps[3] = tempsTour;
+		voituresIRT[numVoiture].meilleursTemps[3] = tempsTour;
 	}//enregistrement des meilleurs temps secteur dans la shm
 
 	struct sembuf sem_op;//structure nécessaire au fonctionnement des sémaphores

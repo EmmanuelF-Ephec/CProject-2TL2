@@ -8,6 +8,7 @@
 #include <sys/shm.h>
 #include <sys/types.h>
 #include <sys/sem.h>
-//#include "memPart2.c"
 #include "randGen.c"
 #include "fork.c"
+#include <stdbool.h>
+#include <sys/shm.h>

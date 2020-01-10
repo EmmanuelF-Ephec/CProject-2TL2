@@ -1,6 +1,5 @@
 struct Voiture {
     int id;
-    //double S1, S2, S3, tempsTotal;
     double meilleursTemps[4];
     int estOut;
     int auStand;
@@ -9,16 +8,30 @@ struct Voiture {
     int validation;
 };
 
+struct Best {
+    int id[3];
+    double best[3];
+};
+
 int compteur;
-int trigger = 1;
-int nombreToursCourse = 1;
+int trigger;
+/*Essais : 1 --> 10min 
+Qualifs : 1 --> 3min*/
+int nombreToursCourse = 10;
 int nombreSecteurs = 3;
+int tempsSecteur;
 
 struct Voiture classements[20];
+int shmBest;
 
 union semun {
-        int val;                    /* value for SETVAL */
-        struct semid_ds *buf;       /* buffer for IPC_STAT, IPC_SET */
-        unsigned short int *array;  /* array for GETALL, SETALL */
-        struct seminfo *__buf;      /* buffer for IPC_INFO */
+    int val;                    /* value for SETVAL */
+    struct semid_ds *buf;       /* buffer for IPC_STAT, IPC_SET */
+    unsigned short int *array;  /* array for GETALL, SETALL */
+    struct seminfo *__buf;      /* buffer for IPC_INFO */
 };
+
+/*Keys
+Instant : 2
+Course : 3
+*/
