@@ -1,11 +1,15 @@
 #include "library.h"
 
+void wait(char periode[2]) {
+    int num;
+    printf("Entrez un nombre pour passer à %s\n",periode);
+    while (scanf("%d",&num) != 1) {
+        getchar();
+        printf ("Entrez bien un nombre !\n");
+    }
+}
+
 int qualif (int ref[],size_t nbrVoiture,int key,int baisse) {
-    struct Best *clear;
-    if ((shmBest = shmget(key+100,sizeof(struct Best),IPC_CREAT | 0666 ) == -1)) {
-        printf("Erreur : shmget best\n");
-        return -1;
-    };
     int shmid;
     struct Voiture *refVoitures;//Référence pour la quantité de mémoire nécessaire à l'alocation de la mé&moire partagée
     if ((shmid = shmget(key, nbrVoiture*sizeof(refVoitures) , IPC_CREAT | 0666 )) == -1) {
@@ -24,7 +28,6 @@ int main (int argc, char *argv[]) {
     int key = 50; // Clé d'accès à la mémoire partagée
     int shmid;//Id pour accèder à la mémoire partagée
     struct Voiture *refVoitures;//Référence pour la quantité de mémoire nécessaire à l'alocation de la mé&moire partagée
-    struct Best *best;//Référence pour la quantité de mémoire nécessaire à l'alocation de la mémoire partagée
     int i;//Variable de comptage
 
     int sem_set_id;//id pour accéder aux sémaphores
@@ -52,27 +55,27 @@ int main (int argc, char *argv[]) {
     
     //clearShm(key);//réinitialisation de toutes les shm's qui seront utilisées au cours de l'exécution du programme
     int voituresQ1[20] = { 7, 99, 5, 16, 8, 20, 4, 55, 10, 26, 44, 77, 11, 18, 23, 33, 3, 27, 63, 88};//Les voitures inscrites
-    size_t nombreVoiture = sizeof(voituresQ1) / sizeof(voituresQ1[0]);//Calcul du nombre de voiture
+    int nombreVoiture = sizeof(voituresQ1) / sizeof(voituresQ1[0]);//Calcul du nombre de voiture
     //------------------------------------------P1----------------------------------------------------------
-    printf("-----------------------------------------------  P1 :  ----------------------------------------------------------\n");
     trigger = 9;
+    wait("P1");
     qualif(voituresQ1,nombreVoiture,key,0);
     key+=5;
 
     //------------------------------------------P2----------------------------------------------------------
-    printf("-----------------------------------------------  P2 :  ----------------------------------------------------------\n");
+    wait("P2");
     qualif(voituresQ1,nombreVoiture,key,0);
     key+=5;
 
     //------------------------------------------P3----------------------------------------------------------
-    printf("-----------------------------------------------  P3 :  ----------------------------------------------------------\n");
+    wait("P3");
     trigger = 6;
     qualif(voituresQ1,nombreVoiture,key,0);
     key+=5;
 
     //------------------------------------------Q1----------------------------------------------------------
     trigger = 6;
-    printf("-----------------------------------------------  Q1 :  ----------------------------------------------------------\n");
+    wait("Q1");
     qualif(voituresQ1,nombreVoiture,key,5);
     key+=5;
 
@@ -83,9 +86,9 @@ int main (int argc, char *argv[]) {
     for (i=0;i<nombreVoiture;i++) {
         voituresQ2[i] = classements[i].id;
     }
-    printf("-----------------------------------------------  Q2 :  ----------------------------------------------------------\n");
+    wait("Q2");
     qualif(voituresQ2,nombreVoiture,key,5);
-    key+10;
+    key+=5;
 
     //------------------------------------------Q3----------------------------------------------------------
     trigger = 4;
@@ -94,7 +97,7 @@ int main (int argc, char *argv[]) {
     for (i=0;i<nombreVoiture;i++) {
         voituresQ3[i] = classements[i].id;
     }
-    printf("-----------------------------------------------  Q3 :  ----------------------------------------------------------\n");
+    wait("Q3");
     qualif(voituresQ3,nombreVoiture,key,0);
     //----------------------------------------Classement Qualifs---------------------------------------------------------
 
@@ -112,7 +115,14 @@ int main (int argc, char *argv[]) {
         return -1;
     };//Initialisation du shmid avec traitement en cas d'erreur
 
-    printf("\n\n-----------------------------------------------  Course :  ------------------------------------------------------\n");
+    //Phase de confirmation
+    int newNum;
+    printf("Entrez un nombre pour passer à la course");
+    while (scanf("%d",&newNum) != 1) {
+        getchar();
+        printf ("Entrez bien un nombre !\n");
+    }
+
     forkCourse(course, shmid, nombreVoiture, sem_set_id);
 
     //----------------------------------------Affichage des résultats de la course-----------------------------

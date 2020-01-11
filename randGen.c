@@ -30,12 +30,6 @@ int randGen(int numVoiture, int shm, int id){
    		printf("Erreur : shmat randgen voiture\n");
 		return -1;
 	}
-
-	struct Best *best;
-	if ((best = shmat(shmBest, 0, 0)) == NULL) {
-   		printf("Erreur : shmat randgen best\n");
-		return -1;
-	}
 	tempsTour = 0;//réinitialisation du temps au tour avant de générer des temps aléatoires pour les 3 secteurs
 	/*int numSecteur = 0;
 	while (numSecteur < 3 || setVoitures[numVoiture].estOut != 1) {
@@ -71,28 +65,20 @@ int randGen(int numVoiture, int shm, int id){
 		if (setVoitures[numVoiture].meilleursTemps[numSecteur] > temps || setVoitures[numVoiture].meilleursTemps[numSecteur] == 0) {
 			setVoitures[numVoiture].meilleursTemps[numSecteur] = temps;
 		}//enregistrement des meilleurs temps secteur dans la shm
-		if (best[0].best[numSecteur] > temps || best[0].best[numSecteur] == 0) {
-			best[0].best[numSecteur] = temps;
-			best[0].id[numSecteur] = setVoitures[numVoiture].id;
-		}
 	}
 	if ((setVoitures[numVoiture].meilleursTemps[3] > tempsTour || setVoitures[numVoiture].meilleursTemps[3] == 0) /*&& setVoitures[numVoiture].estOut != 1*/ ) {
 		setVoitures[numVoiture].meilleursTemps[3] = tempsTour;
 	}//enregistrement du meilleur temps au tour dans la shm
 }
 
-int randGenCourse(int numVoiture, int shm, int id, int tour, int sem_set_id, int shmInstant){
+int randGenCourse(int numVoiture, int shm, int id, int tour, int sem_set_id){
 	double temps;//récupère un temps aléatoire d'un secteur
 	double tempsTour;//additionne les temps aléatoires générés de chaque secteur pour avoir un temps aléatoire au tour
+	
 
 	struct Voiture *voituresIRT;
 	if ((voituresIRT = shmat(shm, 0, 0)) == NULL) {//Adresses d'accès à la mémoire partagée pour la création des temps
    		printf("Erreur : shmat randgencourse voiture\n");	
-		return -1;
-	}
-	struct Voiture *classementsCourseInstant;
-	if ((classementsCourseInstant = shmat(shmInstant, 0, 0)) == NULL) {//Adresses d'accès à la shm GID
-   		printf("Erreur : shmat randgencourse instant\n");
 		return -1;
 	}
 
@@ -101,7 +87,7 @@ int randGenCourse(int numVoiture, int shm, int id, int tour, int sem_set_id, int
 		sleep(1);
 		//printf("%d - %d - %d",numVoiture,num)
 		srand(time(NULL)*getpid()*(numVoiture+1));
-		temps = (double)(genRandomNbr(3499, 4999)/100.00);
+		temps = (double)(genRandomNbr((tempsSecteur-5)*100, (tempsSecteur+5)*100)/100.00);
 		tempsTour += temps;
 		if (voituresIRT[numVoiture].meilleursTemps[numSecteur] > temps || voituresIRT[numVoiture].meilleursTemps[numSecteur] == 0) {
 			voituresIRT[numVoiture].meilleursTemps[numSecteur] = temps;
@@ -120,35 +106,6 @@ int randGenCourse(int numVoiture, int shm, int id, int tour, int sem_set_id, int
     sem_op.sem_flg = 0;
     semop(sem_set_id, &sem_op, 1);
 
-    for(int i = 0; i<20; i++){//recopiage des valeurs enregistrées dans voitureIRT dans la shm GID pour la voiture concernée
-		if(classementsCourseInstant[i].id == voituresIRT[numVoiture].id){//on cherche dans la structure l'emplacement correspondant à l'id de la voiture concernée
-			for(int j = 0; j < 4; j++){
-				classementsCourseInstant[i].meilleursTemps[j] = voituresIRT[numVoiture].meilleursTemps[j];
-			}
-			classementsCourseInstant[i].tempsTotalCourse = voituresIRT[numVoiture].tempsTotalCourse;
-			classementsCourseInstant[i].nombreTour = voituresIRT[numVoiture].nombreTour;
-			break;//une fois l'emplacement adhoc trouvé il n'est pas nécessaire de continuer à comparer l'id avec les emplacements suivants du tableau
-		}
-	}
-
-	struct Voiture c;//Variable intermédiaire pour le tri du classement
-	for(int i=0;i<19;i++) {//tri de la shm GID selon ...
-		for(int j=i+1;j<20;j++) {
-			if ( classementsCourseInstant[i].nombreTour < classementsCourseInstant[j].nombreTour) {//... une majeure (le nombre de tours parcourus) et ...
-				c = classementsCourseInstant[i];
-				classementsCourseInstant[i] = classementsCourseInstant[j];
-				classementsCourseInstant[j] = c;
-			}
-			else if ( classementsCourseInstant[i].nombreTour== classementsCourseInstant[j].nombreTour){
-				if ( classementsCourseInstant[i].tempsTotalCourse > classementsCourseInstant[j].tempsTotalCourse) {// ... une mineure (le temps nécessaire à parcourir les x tours)
-					c = classementsCourseInstant[i];
-					classementsCourseInstant[i] = classementsCourseInstant[j];
-					classementsCourseInstant[j] = c;
-				}
-			}
-		}
-	}//Tri du classement
-
 	/* Rétablissement de la valeur initiale de la sémaphore afin de permettre au fils suivant d'y accéder */
 	sem_op.sem_num = 0;
     sem_op.sem_op = 1;
@@ -164,8 +121,9 @@ void rouler (int shmid, int numVoiture, int id) {
 	}
 }
 
-void roulerCourse (int shmid, int idVoiture, int id, int sem_set_id, int shmInstant){
+//void roulerCourse (int shmid, int idVoiture, int id, int sem_set_id, int shmInstant){
+	void roulerCourse (int shmid, int idVoiture, int id, int sem_set_id){
 	for(int i = 0; i < nombreToursCourse; i++){//fais tourner la voiture le nombre de tours précisé dans struct.h
-		randGenCourse(idVoiture, shmid, id, (i+1), sem_set_id, shmInstant);
+		randGenCourse(idVoiture, shmid, id, (i+1), sem_set_id);
 	}
 }

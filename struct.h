@@ -8,11 +8,6 @@ struct Voiture {
     int validation;
 };
 
-struct Best {
-    int id[3];
-    double best[3];
-};
-
 int compteur;
 int trigger;
 /*Essais : 1 --> 10min 
