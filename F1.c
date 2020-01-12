@@ -85,7 +85,7 @@ int main (int argc, char *argv[]) {
     int voituresQ2[nombreVoiture];
     for (i=0;i<nombreVoiture;i++) {
         voituresQ2[i] = classements[i].id;
-    }
+    }//Préparation de la prochaine qualif
     wait("Q2");
     qualif(voituresQ2,nombreVoiture,key,5);
     key+=5;
@@ -96,14 +96,14 @@ int main (int argc, char *argv[]) {
     int voituresQ3[nombreVoiture];
     for (i=0;i<nombreVoiture;i++) {
         voituresQ3[i] = classements[i].id;
-    }
+    }//Préparation de la prochaine qualif
     wait("Q3");
     qualif(voituresQ3,nombreVoiture,key,0);
     //----------------------------------------Classement Qualifs---------------------------------------------------------
-
+    nombreVoiture = sizeof(voituresQ1) / sizeof(voituresQ1[0]);//Calcul du nombre de voiture
+    int course[nombreVoiture];//les voitures inscrites à la course
     printf("\n  Grille de départ de la course :\n");
     printf("\n    Place | n°   | Meilleur temps\n");
-    int course[nombreVoiture];//les voitures inscrites à la course
     for (i=0;i<nombreVoiture;i++) {//récupération de l'ordre du classement des voitures après les qualifications afin d'afficher la grille de départ et les meilleurs temps au tour respectifs des voitures
         course[i] = classements[i].id;
         printf("     %d%s| %d%s|   %.2f\n" ,i+1,(i < 9) ? "    " : "   ", course[i], (course[i] < 9) ? "    " : "   ", classements[i].meilleursTemps[3]);
