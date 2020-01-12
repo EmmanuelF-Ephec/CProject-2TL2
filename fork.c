@@ -97,6 +97,10 @@ void forkCourse(int tab[20], int shmid, size_t nombreVoiture, int sem_set_id){
             //rouler(shmid,numVoiture,id);
             //roulerCourse(shmid, numVoiture, id, sem_set_id,shmidInstant);
             roulerCourse(shmid, numVoiture, id, sem_set_id);
+             if (getVoitures[numVoiture].auStand < 1 && getVoitures[numVoiture].estOut == 0) {
+                getVoitures[numVoiture].tempsTotalCourse += (genRandomNbr(199,399) / 100.00);
+                printf("Forcer pit");
+            }
             getVoitures[numVoiture].validation = 1;
             exit(0);
         }

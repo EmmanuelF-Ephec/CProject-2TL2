@@ -60,11 +60,23 @@ int randGen(int numVoiture, int shm, int id){
 	for (int numSecteur = 0; numSecteur < 3; numSecteur++ ){//génération de temps aléatoires pour les 3 secteurs
 		sleep(1);
 		srand(time(NULL)*getpid()*(numVoiture+1));
+		if (crash() == 1) {
+			setVoitures[numVoiture].estOut = 1;
+			return 0;
+		}
+		else {
+			temps = (double)(genRandomNbr((tempsSecteur-5)*100, (tempsSecteur+5)*100)/100.00);
+			if (numSecteur == 2 && stand() == 1) {
+				double tempsArret = (double) (genRandomNbr(199,399) / 100.00);
+				temps += tempsArret;
+				setVoitures[numVoiture].auStand++;	
+			}
 		temps = (double)(genRandomNbr((tempsSecteur-5)*100, (tempsSecteur+5)*100)/100.00);
 		tempsTour += temps;
 		if (setVoitures[numVoiture].meilleursTemps[numSecteur] > temps || setVoitures[numVoiture].meilleursTemps[numSecteur] == 0) {
 			setVoitures[numVoiture].meilleursTemps[numSecteur] = temps;
 		}//enregistrement des meilleurs temps secteur dans la shm
+		}
 	}
 	if ((setVoitures[numVoiture].meilleursTemps[3] > tempsTour || setVoitures[numVoiture].meilleursTemps[3] == 0) /*&& setVoitures[numVoiture].estOut != 1*/ ) {
 		setVoitures[numVoiture].meilleursTemps[3] = tempsTour;
@@ -87,11 +99,23 @@ int randGenCourse(int numVoiture, int shm, int id, int tour, int sem_set_id){
 		sleep(1);
 		//printf("%d - %d - %d",numVoiture,num)
 		srand(time(NULL)*getpid()*(numVoiture+1));
-		temps = (double)(genRandomNbr((tempsSecteur-5)*100, (tempsSecteur+5)*100)/100.00);
-		tempsTour += temps;
-		if (voituresIRT[numVoiture].meilleursTemps[numSecteur] > temps || voituresIRT[numVoiture].meilleursTemps[numSecteur] == 0) {
-			voituresIRT[numVoiture].meilleursTemps[numSecteur] = temps;
-		}//enregistrement des meilleurs temps secteur dans la shm
+		if (crash() == 1) {
+			voituresIRT[numVoiture].estOut = 1;
+			return 0;
+		}
+		else {
+			temps = (double)(genRandomNbr((tempsSecteur-5)*100, (tempsSecteur+5)*100)/100.00);
+			if (numSecteur == 2 && stand() == 1) {
+				double tempsArret = (double) (genRandomNbr(199,399) / 100.00);
+				temps += tempsArret;
+				voituresIRT[numVoiture].auStand++;	
+			}
+			temps = (double)(genRandomNbr((tempsSecteur-5)*100, (tempsSecteur+5)*100)/100.00);
+			tempsTour += temps;
+			if (voituresIRT[numVoiture].meilleursTemps[numSecteur] > temps || voituresIRT[numVoiture].meilleursTemps[numSecteur] == 0) {
+				voituresIRT[numVoiture].meilleursTemps[numSecteur] = temps;
+			}//enregistrement des meilleurs temps secteur dans la shm
+		}
 	}
 	voituresIRT[numVoiture].tempsTotalCourse += tempsTour;//enregistrement tu temps total pour la course
 	voituresIRT[numVoiture].nombreTour = tour;//incrémentation du nombre de tours
@@ -117,13 +141,17 @@ int randGenCourse(int numVoiture, int shm, int id, int tour, int sem_set_id){
 void rouler (int shmid, int numVoiture, int id) {
 	int compteur = 0;
 	while (compteur < trigger) {//fais tourner la voiture tant que le nombre de raffraîchissement de l'affichage (précisé dans struct.h) n'a pas été effectué
-		randGen(numVoiture, shmid, id);
+		if(randGen(numVoiture, shmid, id) == 0) {// Si crash
+			break;
+		}
 	}
 }
 
 //void roulerCourse (int shmid, int idVoiture, int id, int sem_set_id, int shmInstant){
 	void roulerCourse (int shmid, int idVoiture, int id, int sem_set_id){
 	for(int i = 0; i < nombreToursCourse; i++){//fais tourner la voiture le nombre de tours précisé dans struct.h
-		randGenCourse(idVoiture, shmid, id, (i+1), sem_set_id);
+		if (randGenCourse(idVoiture, shmid, id, (i+1), sem_set_id == 0)) { // Si crash
+			break;
+		}
 	}
 }
