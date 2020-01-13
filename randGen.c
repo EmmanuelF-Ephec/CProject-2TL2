@@ -9,8 +9,8 @@ int genRandomNbr(int nbrMin, int nbrMax) {
 //Fonction simulant le crash d'une voiture sur base d'une probabilite (1/300 par secteur)
 int crash() {
 	int crash = 0;//Initialisation de la variable crash, agissant comme un booleen (1 signifie crash, 0 signifie pas de crash)
-	int randNbr = genRandomNbr(0,300);//Appel a la methode genRandomNbr sur randGen.c
-	if (randNbr < 2) {//Si le nombre pseudo-aleatoire est plus petit que 2...
+	int randNbr = genRandomNbr(0,999);//Appel a la methode genRandomNbr sur randGen.c
+	if (randNbr < 3) {//Si le nombre pseudo-aleatoire est plus petit que 2...
 		crash = 1;//Changement de la valeur de crash pour 1
 	}
 	return crash;//Retour de crash
@@ -95,7 +95,7 @@ int randGen(int numVoiture, int shm, int id, int sem_set_id){
 			}
 		}
 	}
-	if ((setVoitures[numVoiture].meilleursTemps[3] > tempsTour || setVoitures[numVoiture].meilleursTemps[3] == 0) /*&& setVoitures[numVoiture].estOut != 1*/ ) {//Si le temps tour genere est meilleur (plus petit) que le temps tour enregistre en memoire partagee...
+	if ((setVoitures[numVoiture].meilleursTemps[3] > tempsTour || setVoitures[numVoiture].meilleursTemps[3] == 0 && setVoitures[numVoiture].estOut != 1 )) {//Si le temps tour genere est meilleur (plus petit) que le temps tour enregistre en memoire partagee...
 		setVoitures[numVoiture].meilleursTemps[3] = tempsTour;//remplacement du temps tour enregistre en memoire partagee par le nouveau temps tour
 	}
 

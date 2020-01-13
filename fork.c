@@ -40,7 +40,7 @@ void forkVoitures(int tab[20], int shmid, size_t nombreVoiture, int sem_set_id) 
 
             for(int i=0;i<nombreVoiture;i++) {//Boucle destinee a parcourir tous les elements de classement
                 for(int j=i+1;j<nombreVoiture;j++) {//Boucle destinee a parcourir tous les elements de classement suivants celui selectionne par la boucle ci-dessus
-                    if ( classement[i].meilleursTemps[3] > classement[j].meilleursTemps[3]) {//si l'element selectionne par j a un meilleur temps au tour que l'element selectionne par i...
+                    if ( classement[i].meilleursTemps[3] > classement[j].meilleursTemps[3] && classement[j].meilleursTemps[3] != 0) {//si l'element selectionne par j a un meilleur temps au tour que l'element selectionne par i...
                         c = classement[i];//memorisation temporaire de i (hors de classement)
                         classement[i] = classement[j];//memorisation de j a la place de i (ecrasement des informations contenues dans i)
                         classement[j] = c;//memorisation de c (memorisation temporaire de i) a la place de j (ecrasement des informations contenues dans j)
@@ -56,7 +56,7 @@ void forkVoitures(int tab[20], int shmid, size_t nombreVoiture, int sem_set_id) 
                 }
             }
 
-            printf("\n   Voiture   |   Temps S1    |    Temps S2   |    Temps S3   |   Temps tour   |   Meilleurs Secteur   \n");//Ecriture des noms des colonnes de l'affichage
+            printf("\n   Voiture   |  Temps S1     |    Temps S2   |    Temps S3   |   Temps tour   | Nombre passages au stand|   IN/OUT   |  Meilleur secteur   \n");//Ecriture des noms des colonnes de l'affichage
             for (int cptVoiture = 0;cptVoiture<nombreVoiture;cptVoiture++) {//Boucle destinee a parcourir tous les elements de classement
                 secteur = "";//Initialisation de la variable secteur
                 for (int i=0;i<nombreSecteurs;i++) {//Boucle destinee a parcourir tous les elements de meilleursId
@@ -64,11 +64,29 @@ void forkVoitures(int tab[20], int shmid, size_t nombreVoiture, int sem_set_id) 
                         asprintf(&secteur,"%s S%d",secteur,i+1);//la ligne des informations associees a la voiture i sera marquee par la balise appropriee
                     }
                 }
-                printf("     n°%d %s|     %.2f     |     %.2f     |     %.2f     |     %.2f     |     %s     \n", 
-                classement[cptVoiture].id, ((classement[cptVoiture].id < 10) ? "    " : "   "), classement[cptVoiture].meilleursTemps[0],
-                classement[cptVoiture].meilleursTemps[1], classement[cptVoiture].meilleursTemps[2], classement[cptVoiture].meilleursTemps[3],secteur);
-                //et affichage du meilleurs temps de chaque secteur et du meilleur temps tour pour chaque voiture participant
+                if (classement[cptVoiture].estOut == 0){
+                    printf("     n°%d %s|     %.2f %s|     %.2f %s|     %.2f %s|     %.2f %s|           %d %s|     IN     |    %s \n",       //affichage des voitures encore dans la course
+                    classement[cptVoiture].id, ((classement[cptVoiture].id < 10) ? "    " : "   "),
+                    classement[cptVoiture].meilleursTemps[0], ((classement[cptVoiture].meilleursTemps[0] < 10) ? "     " : "    "), 
+                    classement[cptVoiture].meilleursTemps[1], ((classement[cptVoiture].meilleursTemps[1] < 10) ? "     " : "    "),             //affichage dynamique pour que les colonnes soient toujorus alignées
+                    classement[cptVoiture].meilleursTemps[2],((classement[cptVoiture].meilleursTemps[2] < 10) ? "     " : "    "),      
+                    classement[cptVoiture].meilleursTemps[3], ((classement[cptVoiture].meilleursTemps[3] < 10) ? "     " : "    "),
+                    classement[cptVoiture].auStand, ((classement[cptVoiture].auStand < 10) ? "            " : "           "),
+                    secteur);
+                    }//et affichage du meilleurs temps de chaque secteur et du meilleur temps tour pour chaque voiture participant
                 }
+            for (int cptVoiture = 0; cptVoiture < nombreVoiture; cptVoiture ++){
+                 if (classement[cptVoiture].estOut == 1){
+                    printf("     n°%d %s|     %.2f %s|     %.2f %s|     %.2f %s|     %.2f %s|           %d %s|    OUT     |    %s\n",             //affichage des voitures ecrasées
+                    classement[cptVoiture].id, ((classement[cptVoiture].id < 10) ? "    " : "   "),
+                    classement[cptVoiture].meilleursTemps[0], ((classement[cptVoiture].meilleursTemps[0] < 10) ? "     " : "    "),
+                    classement[cptVoiture].meilleursTemps[1], ((classement[cptVoiture].meilleursTemps[1] < 10) ? "     " : "    "),             //affichage dynamique pour que les colonnes soient tjr alignées
+                    classement[cptVoiture].meilleursTemps[2],((classement[cptVoiture].meilleursTemps[2] < 10) ? "     " : "    "),
+                    classement[cptVoiture].meilleursTemps[3], ((classement[cptVoiture].meilleursTemps[3] < 10) ? "     " : "    "),
+                    classement[cptVoiture].auStand, ((classement[cptVoiture].auStand < 10) ? "            " : "           "),
+                    secteur);
+                 }
+            }
         }
         memcpy(classements,classement,sizeof(classement));//Copie du classement (en variable locale) en variable generale
     }
@@ -149,7 +167,7 @@ void forkCourse(int tab[20], int shmid, size_t nombreVoiture, int sem_set_id){
                         }
                     }
                 }
-                printf("\n   Voiture   |   Temps S1    |    Temps S2   |    Temps S3   |   Temps tour   |   Temps total   |   Tours    |   Meilleur Secteur    \n");//Ecriture des noms des colonnes de l'affichage
+                printf("\n   Voiture   |    Temps S1    |    Temps S2    |    Temps S3    |   Temps tour    |  Temps total   |    Tours   | Nombre de passages au stand |    IN/OUT   |Meilleur Secteur  \n");//Ecriture des noms des colonnes de l'affichage
                 for (int cptVoiture = 0;cptVoiture<nombreVoiture;cptVoiture++) {//Boucle destinee a parcourir tous les elements de classement
                     secteur = "";//Initialisation de la variable secteur
                     for (int i=0;i<nombreSecteurs;i++) {//Boucle destinee a parcourir tous les elements de meilleursId
@@ -157,13 +175,17 @@ void forkCourse(int tab[20], int shmid, size_t nombreVoiture, int sem_set_id){
                             asprintf(&secteur,"%s S%d",secteur,i+1);//la ligne des informations associees a la voiture i sera marquee par la balise appropriee
                         }
                     }
-                    printf("     n°%d %s|     %.2f     |     %.2f     |     %.2f     |     %.2f     |     %.2f     %s|     %d     %s|     %s     \n", 
+                    printf("     n°%d %s|     %.2f %s|     %.2f %s|     %.2f %s|     %.2f %s|     %.2f %s|     %d %s|              %d %s|      %s    |    %s   \n",     //Affichage de chaque voiture et de ses temps
                     classement[cptVoiture].id, ((classement[cptVoiture].id < 10) ? "    " : "   "), 
-                    classement[cptVoiture].meilleursTemps[0], classement[cptVoiture].meilleursTemps[1], 
-                    classement[cptVoiture].meilleursTemps[2], classement[cptVoiture].meilleursTemps[3], 
-                    classement[cptVoiture].tempsTotalCourse, 
-                    ((classement[cptVoiture].tempsTotalCourse < 999.99) ? " " : ""), 
-                    classement[cptVoiture].nombreTour, ((classement[cptVoiture].nombreTour < 10) ? " " : ""),secteur);
+                    classement[cptVoiture].meilleursTemps[0], ((classement[cptVoiture].meilleursTemps[0]) ? "     " : "    "), 
+                    classement[cptVoiture].meilleursTemps[1], ((classement[cptVoiture].meilleursTemps[1]) ? "     " : "    "),                       //Affichage dynamique pour que les colonnes soient tjr au meme niveau
+                    classement[cptVoiture].meilleursTemps[2], ((classement[cptVoiture].meilleursTemps[2]) ? "     " : "    "), 
+                    classement[cptVoiture].meilleursTemps[3], ((classement[cptVoiture].meilleursTemps[3]) ? "     " : "    "),              
+                    classement[cptVoiture].tempsTotalCourse, ((classement[cptVoiture].tempsTotalCourse < 999.99) ? "    " : "   "), 
+                    classement[cptVoiture].nombreTour, ((classement[cptVoiture].nombreTour < 10) ? "     " : "    "),
+                    classement[cptVoiture].auStand, ((classement[cptVoiture].auStand < 10) ? "             " : "           "),
+                    ((classement[cptVoiture].estOut == 0) ? "IN " : "OUT"),
+                    secteur);
                     //et affichage du meilleurs temps de chaque secteur ainsi du meilleur temps tour, du temps total et du nombre de tours pour chaque voiture participant a la course
                 }
             }
