@@ -41,12 +41,12 @@ int randGen(int numVoiture, int shm, int id, int sem_set_id){
 		return -1;
 	}
 
-	struct sembuf sem_op;//structure necessaire au fonctionnement des semaphores
+	/*struct sembuf sem_op;//structure necessaire au fonctionnement des semaphores*/
 	/* Decrementation de la valeur de la semaphore afin d'assurer qu'un seul fils ne puisse y acceder a la fois */
-	sem_op.sem_num = 0;
+	/*sem_op.sem_num = 0;
     sem_op.sem_op = -1;
     sem_op.sem_flg = 0;
-    semop(sem_set_id, &sem_op, 1);
+    semop(sem_set_id, &sem_op, 1);*/
 
 	tempsTour = 0;//Reinitialisation du temps au tour avant de generer des temps aleatoires pour les 3 secteurs
 	/*int numSecteur = 0;
@@ -100,11 +100,11 @@ int randGen(int numVoiture, int shm, int id, int sem_set_id){
 	}
 
 	/* Retablissement de la valeur initiale de la semaphore afin de permettre au fils suivant d'y acceder */
-	sem_op.sem_num = 0;
+	/*sem_op.sem_num = 0;
     sem_op.sem_op = 1;
     sem_op.sem_flg = 0;
     semop(sem_set_id, &sem_op, 1);
-	sleep(1);//Le processus en cours d'execution marque une petite pause avant de reprendre l'execution
+	sleep(1);//Le processus en cours d'execution marque une petite pause avant de reprendre l'execution*/
 }
 
 
