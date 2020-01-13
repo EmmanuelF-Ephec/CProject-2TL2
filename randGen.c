@@ -80,6 +80,16 @@ int randGen(int numVoiture, int shm, int id, int sem_set_id){
 		srand(time(NULL)*getpid()*(numVoiture+1));//definition d'une seed unique pour la generation pseudo-aleatoire a l'aide de rand()
 		if (crash() == 1) {//Appel a la methode crash sur randGen.c. Si le retour est 1...
 			setVoitures[numVoiture].estOut = 1;//Mise a 1 du champ estOut de la voiture
+			tempsTour = 3*(tempsSecteur+5);//Mise du temps tour a la valeur max
+			temps = (tempsSecteur+5);//Mise du temps section a la valeur max
+			for(int i = 0; i < 3; i++){
+				if (setVoitures[numVoiture].meilleursTemps[i] > temps || setVoitures[numVoiture].meilleursTemps[i] == 0) {//Si le temps genere est meilleur (plus petit) que le temps enregistre en memoire partagee...
+					setVoitures[numVoiture].meilleursTemps[i] = temps;//remplacement du temps enregistre en memoire partagee par le nouveau temps
+				}
+			}
+			if ((setVoitures[numVoiture].meilleursTemps[3] > tempsTour || setVoitures[numVoiture].meilleursTemps[3] == 0)) {//Si le temps tour genere est meilleur (plus petit) que le temps tour enregistre en memoire partagee...
+				setVoitures[numVoiture].meilleursTemps[3] = tempsTour;//remplacement du temps tour enregistre en memoire partagee par le nouveau temps tour
+			}
 			return 0;//Sortie de la fonction, c'est a dire que le tour est termine
 		}
 		else {//Sinon...
@@ -98,6 +108,11 @@ int randGen(int numVoiture, int shm, int id, int sem_set_id){
 	if ((setVoitures[numVoiture].meilleursTemps[3] > tempsTour || setVoitures[numVoiture].meilleursTemps[3] == 0 && setVoitures[numVoiture].estOut != 1 )) {//Si le temps tour genere est meilleur (plus petit) que le temps tour enregistre en memoire partagee...
 		setVoitures[numVoiture].meilleursTemps[3] = tempsTour;//remplacement du temps tour enregistre en memoire partagee par le nouveau temps tour
 	}
+
+	/*int dt_return;//Variable pour recuperer le retour de shmdt()
+	if ((dt_return = shmdt(setVoitures)) == -1){//Detachement de la memoire partagee associee a la sceance en cours
+		printf("Erreur : shmdt\n");//traitement en cas d'erreur
+	}*/
 
 	/* Retablissement de la valeur initiale de la semaphore afin de permettre au fils suivant d'y acceder */
 	/*sem_op.sem_num = 0;
@@ -138,6 +153,16 @@ int randGenCourse(int numVoiture, int shm, int id, int tour, int sem_set_id){
 		srand(time(NULL)*getpid()*(numVoiture+1));//definition d'une seed unique pour la generation pseudo-aleatoire a l'aide de rand()
 		if (crash() == 1) {//Appel a la methode crash sur randGen.c. Si le retour est 1...
 			setVoitures[numVoiture].estOut = 1;//Mise a 1 du champ estOut de la voiture
+			tempsTour = 3*(tempsSecteur+5);//Mise du temps tour a la valeur max
+			temps = (tempsSecteur+5);//Mise du temps section a la valeur max
+			for(int i = 0; i < 3; i++){
+				if (setVoitures[numVoiture].meilleursTemps[i] > temps || setVoitures[numVoiture].meilleursTemps[i] == 0) {//Si le temps genere est meilleur (plus petit) que le temps enregistre en memoire partagee...
+					setVoitures[numVoiture].meilleursTemps[i] = temps;//remplacement du temps enregistre en memoire partagee par le nouveau temps
+				}
+			}
+			if ((setVoitures[numVoiture].meilleursTemps[3] > tempsTour || setVoitures[numVoiture].meilleursTemps[3] == 0)) {//Si le temps tour genere est meilleur (plus petit) que le temps tour enregistre en memoire partagee...
+				setVoitures[numVoiture].meilleursTemps[3] = tempsTour;//remplacement du temps tour enregistre en memoire partagee par le nouveau temps tour
+			}
 			return 0;//Sortie de la fonction, c'est a dire que le tour est termine
 		}
 		else {//Sinon...
@@ -153,11 +178,18 @@ int randGenCourse(int numVoiture, int shm, int id, int tour, int sem_set_id){
 			}
 		}
 	}
-	setVoitures[numVoiture].tempsTotalCourse += tempsTour;//Prise en compte du nouveau temps tour dans le temps total de la course
-	setVoitures[numVoiture].nombreTour = tour;//Incrementation du nombre de tours
+	if(setVoitures[numVoiture].estOut != 1){//sécurité permettant d'éviter que les voitures out continuent d'incrémenter leurs tours et leur temps total
+		setVoitures[numVoiture].tempsTotalCourse += tempsTour;//Prise en compte du nouveau temps tour dans le temps total de la course
+		setVoitures[numVoiture].nombreTour = tour;//Incrementation du nombre de tours
+	}
 	if ((setVoitures[numVoiture].meilleursTemps[3] > tempsTour || setVoitures[numVoiture].meilleursTemps[3] == 0) /*&& setVoitures[numVoiture].estOut != 1*/ ) {//Si le temps tour genere est meilleur (plus petit) que le temps tour enregistre en memoire partagee...
 		setVoitures[numVoiture].meilleursTemps[3] = tempsTour;//remplacement du temps tour enregistre en memoire partagee par le nouveau temps tour
 	}
+
+	/*int dt_return;//Variable pour recuperer le retour de shmdt()
+	if ((dt_return = shmdt(setVoitures)) == -1){//Detachement de la memoire partagee associee a la sceance en cours
+		printf("Erreur : shmdt\n");//traitement en cas d'erreur
+	}*/
 
 	/* Retablissement de la valeur initiale de la semaphore afin de permettre au fils suivant d'y acceder */
 	sem_op.sem_num = 0;

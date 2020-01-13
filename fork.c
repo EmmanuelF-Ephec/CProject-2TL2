@@ -24,6 +24,10 @@ void forkVoitures(int tab[20], int shmid, size_t nombreVoiture, int sem_set_id) 
         if (pid_fils == 0) {//Si le processus en cours d'execution correspond a une voiture (processus fils)
             int id = getpid();//Recuperation de l'id du processus en cours d'execution
             rouler(shmid,numVoiture,id, sem_set_id);//Appel de la methode rouler sur randGen.c
+            /*int dt_return;//Variable pour recuperer le retour de shmdt()
+            if ((dt_return = shmdt(getVoitures)) == -1){//Detachement de la memoire partagee associee a la sceance en cours
+                printf("Erreur : shmdt\n");//traitement en cas d'erreur
+            }*/
             exit(0);//Arret d'execution du processus fils
         }
     }
@@ -76,7 +80,13 @@ void forkVoitures(int tab[20], int shmid, size_t nombreVoiture, int sem_set_id) 
                     }//et affichage du meilleurs temps de chaque secteur et du meilleur temps tour pour chaque voiture participant
                 }
             for (int cptVoiture = 0; cptVoiture < nombreVoiture; cptVoiture ++){
-                 if (classement[cptVoiture].estOut == 1){
+                secteur = "";//Initialisation de la variable secteur
+                for (int i=0;i<nombreSecteurs;i++) {//Boucle destinee a parcourir tous les elements de meilleursId
+                    if (classement[cptVoiture].id == meilleursId[i]) {//Si le numero de la voiture i correspond au numero enregistre dans meilleursId...
+                        asprintf(&secteur,"%s S%d",secteur,i+1);//la ligne des informations associees a la voiture i sera marquee par la balise appropriee
+                    }
+                }
+                if (classement[cptVoiture].estOut == 1){
                     printf("     n°%d %s|     %.2f %s|     %.2f %s|     %.2f %s|     %.2f %s|           %d %s|    OUT     |    %s\n",             //affichage des voitures ecrasées
                     classement[cptVoiture].id, ((classement[cptVoiture].id < 10) ? "    " : "   "),
                     classement[cptVoiture].meilleursTemps[0], ((classement[cptVoiture].meilleursTemps[0] < 10) ? "     " : "    "),
@@ -85,10 +95,14 @@ void forkVoitures(int tab[20], int shmid, size_t nombreVoiture, int sem_set_id) 
                     classement[cptVoiture].meilleursTemps[3], ((classement[cptVoiture].meilleursTemps[3] < 10) ? "     " : "    "),
                     classement[cptVoiture].auStand, ((classement[cptVoiture].auStand < 10) ? "            " : "           "),
                     secteur);
-                 }
+                }
             }
         }
         memcpy(classements,classement,sizeof(classement));//Copie du classement (en variable locale) en variable generale
+        /*int dt_return;//Variable pour recuperer le retour de shmdt()
+        if ((dt_return = shmdt(getVoitures)) == -1){//Detachement de la memoire partagee associee a la sceance en cours
+            printf("Erreur : shmdt\n");//traitement en cas d'erreur
+        }*/
     }
 }
 
@@ -122,6 +136,10 @@ void forkCourse(int tab[20], int shmid, size_t nombreVoiture, int sem_set_id){
                 getVoitures[numVoiture].tempsTotalCourse += (genRandomNbr(199,399) / 100.00);//on force un passage au stand
             }
             getVoitures[numVoiture].validation = 1;//attribution de la valeur 1 au champ validation de la voiture (elle a fini de parcourir le nombre de tours precise par la variable nombreToursCourse definie dans struct.h)
+            /*int dt_return;//Variable pour recuperer le retour de shmdt()
+            if ((dt_return = shmdt(getVoitures)) == -1){//Detachement de la memoire partagee associee a la sceance en cours
+                printf("Erreur : shmdt\n");//traitement en cas d'erreur
+            }*/
             exit(0);//Arret d'execution du processus fils
         }
     }
@@ -191,5 +209,9 @@ void forkCourse(int tab[20], int shmid, size_t nombreVoiture, int sem_set_id){
             }
         }
         memcpy(classements, classement, sizeof(classements));//Copie du classement (en variable locale) en variable generale
+        /*int dt_return;//Variable pour recuperer le retour de shmdt()
+        if ((dt_return = shmdt(getVoitures)) == -1){//Detachement de la memoire partagee associee a la sceance en cours
+            printf("Erreur : shmdt\n");//traitement en cas d'erreur
+        }*/
     }
 }
