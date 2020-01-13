@@ -34,7 +34,7 @@ void forkVoitures(int tab[20], int shmid, size_t nombreVoiture, int sem_set_id) 
         int meilleursId[nombreSecteurs];//Variable qui recuperera le numero de la voiture ayant effectue le meilleur temps pour chaque secteur
         char *secteur;//Variable qui permettra de marquer par une balise les voitures dont le numero est enregistre dans meilleursId
 
-        for (int compteur = 0;compteur<trigger;compteur++) {//Boucle destinee a afficher un nombre fixe de fois les resultats avant de cloturer la sceance en cours
+        for (compteur = 0;compteur<trigger;compteur++) {//Boucle destinee a afficher un nombre fixe de fois les resultats avant de cloturer la sceance en cours
             memcpy(classement, getVoitures, nombreVoiture*sizeof(struct Voiture));//Copie de la memoire partagee dans le classement (en variable locale)
             sleep(3);//Le processus en cours d'execution marque une petite pause avant de reprendre l'execution
 

@@ -8,6 +8,7 @@ struct Voiture {//Creation du squelette d'une structure Voiture. Cela nous perme
     int validation;//Champ indiquant si la voiture a termine tous ses tours ou non
 };
 
+int compteur;//Variable de comptage déterminant quand doivent s'arrêter les processus lors des essais et qualifications
 int trigger;//Variable determinant le nombre de rafraichissements de l'affichage a chaque sceance d'essai ou de qualifications
 int nombreToursCourse = 10;//Nombre de tours a effectuer lors de la course
 int nombreSecteurs = 3;//Nombre de secteurs composant un tour de piste
